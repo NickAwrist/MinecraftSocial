@@ -1,0 +1,4 @@
+name: MinecraftSocial
+version: '${project.version}'
+main: nicholas.minecraftsocial.MinecraftSocial
+api-version: '1.20'

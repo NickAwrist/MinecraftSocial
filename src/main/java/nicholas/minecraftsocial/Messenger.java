@@ -3,6 +3,7 @@ package nicholas.minecraftsocial;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 
 public class Messenger {
 
@@ -22,6 +23,10 @@ public class Messenger {
 
     public static void sendInfo(CommandSender sender, String message, Component prefix){
         sender.sendMessage(prefix.append(Component.text(message, NamedTextColor.GRAY)));
+    }
+
+    public static void sendDebug(String message){
+        MinecraftSocial.getProvidingPlugin(MinecraftSocial.class).getLogger().info(message);
     }
 
 }

@@ -66,15 +66,36 @@ public class DatabaseConnection {
 
             Bukkit.getLogger().info("User found in database");
 
+            // Get the friends list from the database and convert it to an ArrayList of UUIDs
             ArrayList<String> uuidStrings = gson.fromJson(result.getString("friend_uuids"), ArrayList.class);
             ArrayList<UUID> friendsList = new ArrayList<>();
-            for(String uuidString : uuidStrings){
-                friendsList.add(UUID.fromString(uuidString));
+            if(uuidStrings != null){
+                for(String uuidString : uuidStrings){
+                    friendsList.add(UUID.fromString(uuidString));
+                }
             }
 
-            String username = result.getString("username");
 
-            return new SocialUser(player, username, friendsList);
+            // Get the incoming friend requests from the database and convert them to ArrayLists of UUIDs
+            uuidStrings = gson.fromJson(result.getString("incoming_requests"), ArrayList.class);
+            ArrayList<UUID> incomingRequests = new ArrayList<>();
+            if(uuidStrings != null){
+                for(String uuidString : uuidStrings){
+                    incomingRequests.add(UUID.fromString(uuidString));
+                }
+            }
+
+            // Get the outgoing friend requests from the database and convert them to ArrayLists of UUIDs
+            uuidStrings = gson.fromJson(result.getString("outgoing_requests"), ArrayList.class);
+            ArrayList<UUID> outgoingRequests = new ArrayList<>();
+            if(uuidStrings != null){
+                for(String uuidString : uuidStrings){
+                    outgoingRequests.add(UUID.fromString(uuidString));
+                }
+            }
+
+
+            return new SocialUser(player, friendsList, incomingRequests, outgoingRequests);
 
         // If the user does not exist, create a fresh social user and add it to the database. (brand-new users)
         }else{
@@ -117,12 +138,7 @@ public class DatabaseConnection {
     }
 
     // Update the friend list of a player. Will be used when a player adds or removes a friend
-    public void updateFriendList(SocialUser user, SocialUser friend, boolean add) throws SQLException{
-        if(add){
-            user.addFriend(friend);
-        }else{
-            user.removeFriend(friend);
-        }
+    public void updateFriendList(SocialUser user) throws SQLException{
 
         String query = "UPDATE users SET friend_uuids = ? WHERE uuid = ?";
         PreparedStatement statement = connection.prepareStatement(query);

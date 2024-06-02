@@ -2,3 +2,8 @@ name: MinecraftSocial
 version: '${project.version}'
 main: nicholas.minecraftsocial.MinecraftSocial
 api-version: '1.20'
+commands:
+  friend:
+    description: Main command for friend operations
+    usage: /friend help
+

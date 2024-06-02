@@ -15,16 +15,15 @@ public class LoginEvent implements Listener {
     @EventHandler
     public void onLogin(PlayerJoinEvent e) throws SQLException {
 
-        Bukkit.getLogger().info("Player " + e.getPlayer().getName() + " has logged in.");
-
         // Creates a SocialUser instance for the player. If the player is new, it will create a new instance and add
         // it to the database
         SocialUser user = SocialUser.getSocialUser(e.getPlayer().getUniqueId());
 
-        Bukkit.getLogger().info("SocialUser object created for " + e.getPlayer().getName());
+        Messenger.sendDebug("SocialUser object created for " + user.getUsername());
+        Messenger.sendDebug("Friends list: " + user.getFriendsList().toString());
 
 
-        Bukkit.getLogger().info("Getting friends list for " + e.getPlayer().getName());
+        Bukkit.getLogger().info("Getting friends list for " + user.getUsername());
         // Get the number of friends online
         SocialUser friend;
         int onlineFriends = 0;

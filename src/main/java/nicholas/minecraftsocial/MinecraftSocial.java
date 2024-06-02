@@ -1,5 +1,7 @@
 package nicholas.minecraftsocial;
 
+import nicholas.minecraftsocial.commands.Friend;
+import nicholas.minecraftsocial.commands.FriendTabCompleter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,6 +21,10 @@ public final class MinecraftSocial extends JavaPlugin {
         }
 
         getServer().getPluginManager().registerEvents(new LoginEvent(), this);
+
+        // register commands
+        this.getCommand("friend").setExecutor(new Friend());
+        this.getCommand("friend").setTabCompleter(new FriendTabCompleter());
 
     }
 

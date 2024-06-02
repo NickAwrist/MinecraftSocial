@@ -41,7 +41,7 @@ public class FriendTabCompleter implements TabCompleter {
                     return user.getFriendsList().stream()
                             .map(uuid -> {
                                 Player friend = Bukkit.getPlayer(uuid);
-                                return (friend != null) ? friend.getName() : null;
+                                return (friend != null && !friend.getName().equals(user.getUsername())) ? friend.getName() : null;
                             })
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());
@@ -50,7 +50,7 @@ public class FriendTabCompleter implements TabCompleter {
                     return user.getIncomingRequests().stream()
                             .map(uuid -> {
                                 Player friend = Bukkit.getPlayer(uuid);
-                                return (friend != null) ? friend.getName() : null;
+                                return (friend != null && !friend.getName().equals(user.getUsername())) ? friend.getName() : null;
                             })
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());

@@ -1,11 +1,13 @@
 package nicholas.minecraftsocial.events;
 
-import nicholas.minecraftsocial.Messenger;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import nicholas.minecraftsocial.SocialUser;
-import org.bukkit.Bukkit;
+import nicholas.minecraftsocial.helper.MessageHandler;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -29,7 +31,25 @@ public class LoginEvent implements Listener {
             }
         }
 
-        Messenger.sendInfo(e.getPlayer(), "You have " + onlineFriends + " friends online.");
+        // Send player message indicating the number of friends they have online
+        Component message = createMessage(onlineFriends);
+
+        MessageHandler.chatMessage(user.getPlayer(), message, true);
+    }
+
+    private static Component createMessage(int onlineFriends) {
+        Component message = Component.text("You have ")
+                .color(NamedTextColor.GRAY);
+        if(onlineFriends > 0){
+            message = message.append(Component.text(onlineFriends)
+                    .color(NamedTextColor.GREEN));
+        }else{
+            message = message.append(Component.text(onlineFriends)
+                    .color(NamedTextColor.YELLOW));
+        }
+        message = message.append(Component.text(" online.")
+                .color(NamedTextColor.GRAY));
+        return message;
     }
 
 }

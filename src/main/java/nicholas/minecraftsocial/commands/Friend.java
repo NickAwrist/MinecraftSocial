@@ -1,7 +1,8 @@
 package nicholas.minecraftsocial.commands;
 
 import net.kyori.adventure.text.Component;
-import nicholas.minecraftsocial.Messenger;
+import net.kyori.adventure.text.format.NamedTextColor;
+import nicholas.minecraftsocial.helper.MessageHandler;
 import nicholas.minecraftsocial.SocialUser;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -11,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class Friend implements CommandExecutor{
 
@@ -77,15 +80,22 @@ public class Friend implements CommandExecutor{
 
     private void help(CommandSender commandSender){
 
-        Component empty = Component.text("");
+        Player player = (Player) commandSender;
+        Component message = Component.text("");
 
-        Messenger.sendInfo(commandSender, "Friend Commands:");
-        Messenger.sendInfo(commandSender, "/friend list - List all of your friends.");
-        Messenger.sendInfo(commandSender, "/friend add <player> - Send a friend request to a player.", empty);
-        Messenger.sendInfo(commandSender, "/friend remove <player> - Remove a player from your friends list.", empty);
-        Messenger.sendInfo(commandSender, "/friend accept <player> - Accept a friend request from a player.", empty);
-        Messenger.sendInfo(commandSender, "/friend deny <player> - Deny a friend request from a player.", empty);
+        MessageHandler.chatLegacyMessage(player, "Friend Commands:", true);
 
+        message = message.append(Component.text("/friend list - List all of your friends."));
+        message = message.append(Component.newline());
+        message = message.append(Component.text("/friend add <player> - Send a friend request to a player."));
+        message = message.append(Component.newline());
+        message = message.append(Component.text("/friend remove <player> - Remove a player from your friends list."));
+        message = message.append(Component.newline());
+        message = message.append(Component.text("/friend accept <player> - Accept a friend request from a player."));
+        message = message.append(Component.newline());
+        message = message.append(Component.text("/friend deny <player> - Deny a friend request from a player."));
+
+        MessageHandler.chatMessage(player, message, false, true);
     }
 
     // Sends a friend request to the target player
@@ -103,21 +113,21 @@ public class Friend implements CommandExecutor{
         // Check if the sender is already friends with the target
         if(sender.getFriendsList().contains(target.getUuid())){
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            Messenger.sendError(senderPlayer, "You are already friends with this player.");
+            MessageHandler.chatError(senderPlayer, "You are already friends with this player.");
             return;
         }
 
         // Check if there is already an outgoing request to the target
         if(sender.getOutgoingRequests().contains(target.getUuid())){
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            Messenger.sendError(senderPlayer, "You have already sent a friend request to this player.");
+            MessageHandler.chatError(senderPlayer, "You have already sent a friend request to this player.");
             return;
         }
 
         // Check if there is already an incoming request from the target
         if(sender.getIncomingRequests().contains(target.getUuid())){
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            Messenger.sendError(senderPlayer, "This player has already sent you a friend request. Use /friend accept "+target.getUsername()+" to accept it.");
+            MessageHandler.chatError(senderPlayer, "This player has already sent you a friend request. Use /friend accept "+target.getUsername()+" to accept it.");
             return;
         }
 
@@ -128,11 +138,11 @@ public class Friend implements CommandExecutor{
         // Notify the players
         if(targetPlayer.isOnline()){
             targetPlayer.playSound(targetPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
-            Messenger.sendInfo(targetPlayer, "You have received a friend request from " + senderPlayer.getName() + ". Use /friend accept " + senderPlayer.getName() + " to accept it.");
+            MessageHandler.chatLegacyMessage(targetPlayer, "You have received a friend request from " + senderPlayer.getName() + ". Use /friend accept " + senderPlayer.getName() + " to accept it.", true);
         }
 
         senderPlayer.playSound(senderPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
-        Messenger.sendSuccess(senderPlayer, "Friend request sent successfully.");
+        MessageHandler.chatSuccess(senderPlayer, "Friend request sent successfully.");
     }
 
     // Removes a friend from the sender's friends list
@@ -149,7 +159,7 @@ public class Friend implements CommandExecutor{
         // Check if the sender is not friends with the target
         if(!sender.getFriendsList().contains(target.getUuid())){
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            Messenger.sendError(senderPlayer, "You are not friends with this player.");
+            MessageHandler.chatError(senderPlayer, "You are not friends with this player.");
             return;
         }
 
@@ -158,7 +168,7 @@ public class Friend implements CommandExecutor{
         target.removeFriend(sender);
 
         // Notify sender
-        Messenger.sendSuccess(senderPlayer, "Friend removed successfully.");
+        MessageHandler.chatSuccess(senderPlayer, "Friend removed successfully.");
     }
 
     // Sender accepting target's friend request
@@ -175,7 +185,7 @@ public class Friend implements CommandExecutor{
 
         if(!sender.getIncomingRequests().contains(target.getUuid())){
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            Messenger.sendError(senderPlayer, "You do not have a friend request from this player.");
+            MessageHandler.chatError(senderPlayer, "You do not have a friend request from this player.");
             return;
         }
 
@@ -184,13 +194,13 @@ public class Friend implements CommandExecutor{
 
         if(targetPlayer.isOnline()){
             targetPlayer.playSound(targetPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
-            Messenger.sendInfo(targetPlayer, senderPlayer.getName() + " has accepted your friend request.");
+            MessageHandler.chatLegacyMessage(targetPlayer, senderPlayer.getName() + " has accepted your friend request.", true);
         }
 
         sender.addFriend(target);
         target.addFriend(sender);
 
-        Messenger.sendSuccess(senderPlayer, "You are now friends with " + targetPlayer.getName() + ".");
+        MessageHandler.chatSuccess(senderPlayer, "You are now friends with " + targetPlayer.getName() + ".");
     }
 
     // Sender denying target's friend request
@@ -202,7 +212,7 @@ public class Friend implements CommandExecutor{
 
         if(!sender.getIncomingRequests().contains(target.getUuid())){
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            Messenger.sendError(senderPlayer, "You do not have a friend request from this player.");
+            MessageHandler.chatError(senderPlayer, "You do not have a friend request from this player.");
             return;
         }
 
@@ -211,33 +221,50 @@ public class Friend implements CommandExecutor{
 
         if(targetPlayer.isOnline()){
             targetPlayer.playSound(targetPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
-            Messenger.sendInfo(targetPlayer, senderPlayer.getName() + " has denied your friend request.");
+            MessageHandler.chatLegacyMessage(targetPlayer, senderPlayer.getName() + " has denied your friend request.", true);
         }
 
-        Messenger.sendSuccess(senderPlayer, "Friend request denied.");
+        MessageHandler.chatSuccess(senderPlayer, "Friend request denied.");
     }
 
-    private void listFriends(SocialUser sender) {
-        StringBuilder friendsList = new StringBuilder();
-        SocialUser friend;
-        for (int i = 0; i < sender.getFriendsList().size(); i++) {
+    // Sends player a list of their friends
+    private void listFriends(SocialUser sender) throws SQLException {
 
-            friend = SocialUser.getSocialUserFromList(sender.getFriendsList().get(i));
-            friendsList.append(friend.getUsername());
-
-            if (i != sender.getFriendsList().size() - 1) {
-                friendsList.append(", ");
-            }
+        Component message = getFriendsListComponent(sender);
+        if(message == null){
+            message = Component.text("No friends in friends list.").color(NamedTextColor.YELLOW);
         }
 
-        Messenger.sendInfo(sender.getPlayer(), "Friends: " + friendsList);
+        MessageHandler.chatMessage(sender.getPlayer(), message, true);
+    }
+
+    // Creates a component for user's friend list. Names appear green if the friend is online.
+    private Component getFriendsListComponent(SocialUser user) throws SQLException {
+        Component component = null;
+        ArrayList<UUID> friendsList = user.getFriendsList();
+
+        SocialUser friend;
+        for(int i=0; i<friendsList.size(); i++){
+            friend = SocialUser.getSocialUser(friendsList.get(i));
+
+            component = Component.text(friend.getUsername());
+            if(friend.getPlayer().isOnline()){
+                component = component.append(component.color(NamedTextColor.GREEN));
+            }else{
+                component = component.append(component.color(NamedTextColor.GRAY));
+            }
+
+            if(i != friendsList.size()-1){
+                component = component.append(Component.text(", "));
+            }
+        }
+        return component;
     }
 
     // Check if the player has permission to use the command
     private boolean checkPermission(Player player, String permission){
         if(!player.hasPermission("minecraftsocial."+permission) && !player.isOp()) {
-            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            Messenger.sendError(player, "You do not have permission to use this command.");
+            MessageHandler.noPermission(player);
             return false;
         }
         return true;

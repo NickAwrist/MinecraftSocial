@@ -16,6 +16,10 @@ import org.bukkit.plugin.Plugin;
 
     The plugin does not write to the database when a player logs out
     since it all happens in memory and the database is only used to store the data.
+
+        TODO
+  *      - Create support for JSON database if connection to MySQL fails
+  *      - Add support for other databases
  */
 
 public class DatabaseConnection {

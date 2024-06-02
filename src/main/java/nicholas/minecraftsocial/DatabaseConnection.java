@@ -33,6 +33,7 @@ public class DatabaseConnection {
             return;
         }
         connection = DriverManager.getConnection(URL, USER, PASSWORD);
+
     }
 
     // Disconnect from database
@@ -45,9 +46,6 @@ public class DatabaseConnection {
     // Get player from database. Will be used when a player logs in.
     // If the player does not exist create a fresh social user
     public SocialUser getSocialUser(UUID uuid) throws SQLException{
-
-        Bukkit.getLogger().info("Searching in database for social user, UUID: " + uuid.toString());
-
         String query = "SELECT * FROM users WHERE uuid = ?";
         PreparedStatement statement = connection.prepareStatement(query);
 
@@ -63,9 +61,6 @@ public class DatabaseConnection {
 
         // If the user exists in the database, return their data.
         if(result.next()){
-
-            Bukkit.getLogger().info("User found in database");
-
             // Get the friends list from the database and convert it to an ArrayList of UUIDs
             ArrayList<String> uuidStrings = gson.fromJson(result.getString("friend_uuids"), ArrayList.class);
             ArrayList<UUID> friendsList = new ArrayList<>();
@@ -99,9 +94,6 @@ public class DatabaseConnection {
 
         // If the user does not exist, create a fresh social user and add it to the database. (brand-new users)
         }else{
-
-            Bukkit.getLogger().info("User not found in database");
-
             SocialUser newUser = new SocialUser(player);
             addNewUser(newUser);
 
@@ -111,9 +103,6 @@ public class DatabaseConnection {
 
     // Add a player to the database. Used when a player logs in for the first time
     public void addNewUser(SocialUser user) throws SQLException{
-
-        Bukkit.getLogger().info("Adding new user to database");
-
         String query = "INSERT INTO users (uuid, username, friend_uuids) VALUES (?, ?, ?)";
         PreparedStatement statement = connection.prepareStatement(query);
 

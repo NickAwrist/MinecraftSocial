@@ -46,11 +46,7 @@ public class SocialUser {
     // Get the SocialUser object for a certain player by their UUID
     public static SocialUser getSocialUser(UUID uuid) throws SQLException {
 
-        Bukkit.getLogger().info("Getting social user for " + uuid.toString());
-
         if(socialUsers.containsKey(uuid)) {
-
-            Bukkit.getLogger().info("Social user found in memory");
             SocialUser user = socialUsers.get(uuid);
             user.updatePlayerInstance();
 
@@ -58,8 +54,6 @@ public class SocialUser {
 
             return user;
         }else{
-
-            Bukkit.getLogger().info("Social user not found in memory. Searching database.");
             return databaseConnection.getSocialUser(uuid);
         }
     }

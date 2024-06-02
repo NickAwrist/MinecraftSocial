@@ -1,5 +1,6 @@
 package nicholas.minecraftsocial.commands;
 
+import net.kyori.adventure.text.Component;
 import nicholas.minecraftsocial.Messenger;
 import nicholas.minecraftsocial.SocialUser;
 import org.bukkit.Sound;
@@ -26,26 +27,20 @@ public class Friend implements CommandExecutor{
 
         Player targetPlayer = null;
 
-        if(!strings[0].equals("help") && !strings[0].equals("list")){
+        if(strings.length == 2){
             targetPlayer = commandSender.getServer().getPlayer(strings[1]);
-
-            if(targetPlayer == null){
-                Messenger.sendError(commandSender, "Player not found.");
-                return true;
-            }
         }
 
         try {
             SocialUser socialUserSender = SocialUser.getSocialUser(((Player) commandSender).getUniqueId());
             SocialUser socialUserTarget = null;
 
-            if(targetPlayer != null){
+            if(strings.length == 2){
+                if(targetPlayer == null){
+                    commandSender.sendMessage("Player not found.");
+                    return false;
+                }
                 socialUserTarget = SocialUser.getSocialUser(targetPlayer.getUniqueId());
-            }
-
-            if(socialUserTarget == null || socialUserSender == null){
-                Messenger.sendError(commandSender, "Error retrieving player data. Please try again later.");
-                return true;
             }
 
             String option = strings[0].toLowerCase();
@@ -82,12 +77,14 @@ public class Friend implements CommandExecutor{
 
     private void help(CommandSender commandSender){
 
+        Component empty = Component.text("");
+
         Messenger.sendInfo(commandSender, "Friend Commands:");
-        Messenger.sendInfo(commandSender, "/friend add <player> - Send a friend request to a player.");
-        Messenger.sendInfo(commandSender, "/friend remove <player> - Remove a player from your friends list.");
-        Messenger.sendInfo(commandSender, "/friend accept <player> - Accept a friend request from a player.");
-        Messenger.sendInfo(commandSender, "/friend deny <player> - Deny a friend request from a player.");
         Messenger.sendInfo(commandSender, "/friend list - List all of your friends.");
+        Messenger.sendInfo(commandSender, "/friend add <player> - Send a friend request to a player.", empty);
+        Messenger.sendInfo(commandSender, "/friend remove <player> - Remove a player from your friends list.", empty);
+        Messenger.sendInfo(commandSender, "/friend accept <player> - Accept a friend request from a player.", empty);
+        Messenger.sendInfo(commandSender, "/friend deny <player> - Deny a friend request from a player.", empty);
 
     }
 

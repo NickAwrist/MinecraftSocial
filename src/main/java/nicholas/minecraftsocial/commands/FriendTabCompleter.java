@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class FriendTabCompleter implements TabCompleter {
@@ -42,7 +43,7 @@ public class FriendTabCompleter implements TabCompleter {
                                 Player friend = Bukkit.getPlayer(uuid);
                                 return (friend != null) ? friend.getName() : null;
                             })
-                            .filter(name -> name != null)
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toList());
                 case "accept":
                 case "deny": {
@@ -51,7 +52,7 @@ public class FriendTabCompleter implements TabCompleter {
                                 Player friend = Bukkit.getPlayer(uuid);
                                 return (friend != null) ? friend.getName() : null;
                             })
-                            .filter(name -> name != null)
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toList());
                 }
             }

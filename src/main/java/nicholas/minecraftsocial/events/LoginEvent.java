@@ -19,11 +19,6 @@ public class LoginEvent implements Listener {
         // it to the database
         SocialUser user = SocialUser.getSocialUser(e.getPlayer().getUniqueId());
 
-        Messenger.sendDebug("SocialUser object created for " + user.getUsername());
-        Messenger.sendDebug("Friends list: " + user.getFriendsList().toString());
-
-
-        Bukkit.getLogger().info("Getting friends list for " + user.getUsername());
         // Get the number of friends online
         SocialUser friend;
         int onlineFriends = 0;
@@ -35,9 +30,6 @@ public class LoginEvent implements Listener {
         }
 
         Messenger.sendInfo(e.getPlayer(), "You have " + onlineFriends + " friends online.");
-
-        Bukkit.getLogger().info("Login event for " + e.getPlayer().getName() + " completed.");
-
     }
 
 }

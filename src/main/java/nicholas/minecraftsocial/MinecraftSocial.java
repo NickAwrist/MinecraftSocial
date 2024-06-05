@@ -3,25 +3,34 @@ package nicholas.minecraftsocial;
 import nicholas.minecraftsocial.commands.Friend;
 import nicholas.minecraftsocial.commands.FriendTabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import nicholas.minecraftsocial.events.LoginEvent;
 
 public final class MinecraftSocial extends JavaPlugin {
 
-    private static final DatabaseConnection databaseConnection = new DatabaseConnection();
+    private static DatabaseConnection databaseConnection;
     private static MinecraftSocial plugin;
 
     @Override
     public void onEnable() {
         plugin = this;
-        // Plugin startup logic
-        // Connect to database
+
+        saveDefaultConfig();
+
         /*
                 TODO
         *        - Create more robust error message when database fails to connect.
         *        - If the database fails to connect, create JSON storage alternative
          */
+
+        String databaseType;
+        if(getConfig().getBoolean("DatabaseType.mysql.enabled")) {
+            databaseType = "mysql";
+        }else{
+            databaseType = "json";
+        }
+
         try {
+            databaseConnection = new DatabaseConnection(databaseType);
             databaseConnection.connect();
         } catch (Exception e) {
             e.printStackTrace();
@@ -33,8 +42,6 @@ public final class MinecraftSocial extends JavaPlugin {
         // Register /friend command
         this.getCommand("friend").setExecutor(new Friend());
         this.getCommand("friend").setTabCompleter(new FriendTabCompleter());
-
-
     }
 
     @Override
@@ -53,7 +60,7 @@ public final class MinecraftSocial extends JavaPlugin {
         }
     }
 
-    public static DatabaseConnection getDatabaseConnection(){
+    public static DatabaseConnection getDatabaseConnection() {
         return databaseConnection;
     }
 

@@ -2,7 +2,7 @@
 # Which database to use. If mysql is disabled, a JSON file will be used.
 DatabaseType:
   mysql:
-    enabled: true
+    enabled: false
     host: "your_url"
     username: "your_username"
     password: "your_password"

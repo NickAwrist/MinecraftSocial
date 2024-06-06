@@ -2,8 +2,12 @@ package nicholas.minecraftsocial;
 
 import nicholas.minecraftsocial.commands.Friend;
 import nicholas.minecraftsocial.commands.FriendTabCompleter;
+import nicholas.minecraftsocial.database.DatabaseConnection;
+import nicholas.minecraftsocial.database.JSON_DB;
+import nicholas.minecraftsocial.database.MySQL_DB;
 import org.bukkit.plugin.java.JavaPlugin;
 import nicholas.minecraftsocial.events.LoginEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public final class MinecraftSocial extends JavaPlugin {
 
@@ -22,19 +26,15 @@ public final class MinecraftSocial extends JavaPlugin {
         *        - If the database fails to connect, create JSON storage alternative
          */
 
-        String databaseType;
         if(getConfig().getBoolean("DatabaseType.mysql.enabled")) {
-            databaseType = "mysql";
+            databaseConnection = new MySQL_DB();
         }else{
-            databaseType = "json";
+            databaseConnection = new JSON_DB();
         }
 
-        try {
-            databaseConnection = new DatabaseConnection(databaseType);
-            databaseConnection.connect();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        databaseConnection.connect();
+        SocialUser.setDatabaseConnection(databaseConnection);
+        scheduleUpdateTask();
 
         // Register LoginEvent
         getServer().getPluginManager().registerEvents(new LoginEvent(), this);
@@ -48,23 +48,30 @@ public final class MinecraftSocial extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
 
-        // Disconnect from the database
-        /*
-                TODO
-         *       - Create more robust error message
-         */
         try {
+
+            if(databaseConnection.needsUpdate()){
+                databaseConnection.updateDatabase();
+            }
+
             databaseConnection.disconnect();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static DatabaseConnection getDatabaseConnection() {
-        return databaseConnection;
-    }
-
     public static MinecraftSocial getPlugin() {
         return plugin;
+    }
+
+    private void scheduleUpdateTask(){
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(databaseConnection.needsUpdate()){
+                    databaseConnection.updateDatabase();
+                }
+            }
+        }.runTaskTimer(plugin, 0, 20*30);
     }
 }

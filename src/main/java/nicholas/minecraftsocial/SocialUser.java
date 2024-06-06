@@ -1,19 +1,21 @@
 package nicholas.minecraftsocial;
 
+import nicholas.minecraftsocial.database.DatabaseConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class SocialUser {
 
     private static final HashMap<UUID, SocialUser> socialUsers = new HashMap<>();
-    private static final DatabaseConnection databaseConnection = MinecraftSocial.getDatabaseConnection();
+    private static DatabaseConnection databaseConnection;
 
-    private Player player;
+    private transient Player player;
     private String username;
     private final UUID uuid;
     private final ArrayList<UUID> friendsList;
@@ -71,6 +73,19 @@ public class SocialUser {
     public static void removeSocialUser(Player player) {
         socialUsers.remove(player.getUniqueId());
     }
+
+    public static ArrayList<SocialUser> usersAsList() {
+        ArrayList<SocialUser> users = new ArrayList<>();
+        for (Map.Entry<UUID, SocialUser> entry : socialUsers.entrySet()) {
+            users.add(entry.getValue());
+        }
+        return users;
+    }
+
+    public static void setDatabaseConnection(DatabaseConnection connection) {
+        databaseConnection = connection;
+    }
+
 // ---------------------------------------------------- INSTANCE METHODS
 
     // Getters and Setters
@@ -97,32 +112,32 @@ public class SocialUser {
     }
 
     // Add and remove friend requests. Update database for storage
-    public void addIncomingRequest(SocialUser sender) throws SQLException {
+    public void addIncomingRequest(SocialUser sender){
         incomingRequests.add(sender.getUuid());
-        MinecraftSocial.getDatabaseConnection().updateFriendList(this);
+        databaseConnection.setUpdatePending(true);
     }
-    public void addOutgoingRequest(SocialUser target) throws SQLException {
+    public void addOutgoingRequest(SocialUser target){
         outgoingRequests.add(target.getUuid());
-        MinecraftSocial.getDatabaseConnection().updateFriendList(this);
+        databaseConnection.setUpdatePending(true);
     }
 
-    public void removeIncomingRequest(SocialUser sender) throws SQLException {
+    public void removeIncomingRequest(SocialUser sender){
         incomingRequests.remove(sender.getUuid());
-        MinecraftSocial.getDatabaseConnection().updateFriendList(this);
+        databaseConnection.setUpdatePending(true);
     }
-    public void removeOutgoingRequest(SocialUser target) throws SQLException {
+    public void removeOutgoingRequest(SocialUser target){
         outgoingRequests.remove(target.getUuid());
-        MinecraftSocial.getDatabaseConnection().updateFriendList(this);
+        databaseConnection.setUpdatePending(true);
     }
 
     // Add and remove friends. Update database for storage
-    public void addFriend(SocialUser target) throws SQLException {
+    public void addFriend(SocialUser target){
         friendsList.add(target.getUuid());
-        MinecraftSocial.getDatabaseConnection().updateFriendList(this);
+        databaseConnection.setUpdatePending(true);
     }
-    public void removeFriend(SocialUser target) throws SQLException {
+    public void removeFriend(SocialUser target){
         friendsList.remove(target.getUuid());
-        MinecraftSocial.getDatabaseConnection().updateFriendList(this);
+        databaseConnection.setUpdatePending(true);
     }
 
 }

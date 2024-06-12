@@ -7,7 +7,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.UUID;
 
-public abstract interface DatabaseConnection {
+public interface DatabaseConnection {
 
     Gson gson = new Gson();
     Plugin plugin = MinecraftSocial.getPlugin();

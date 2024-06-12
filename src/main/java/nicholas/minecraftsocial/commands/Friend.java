@@ -38,6 +38,8 @@ public class Friend implements CommandExecutor{
             SocialUser socialUserSender = SocialUser.getSocialUser(((Player) commandSender).getUniqueId());
             SocialUser socialUserTarget = null;
 
+
+            String option = strings[0].toLowerCase();
             if(strings.length == 2){
                 if(targetPlayer == null){
                     commandSender.sendMessage("Player not found.");
@@ -46,18 +48,21 @@ public class Friend implements CommandExecutor{
                 socialUserTarget = SocialUser.getSocialUser(targetPlayer.getUniqueId());
             }
 
-            String option = strings[0].toLowerCase();
             switch (option) {
                 case "add":
+                    assert socialUserTarget != null;
                     addFriend(socialUserSender, socialUserTarget);
                     break;
                 case "remove":
+                    assert socialUserTarget != null;
                     removeFriend(socialUserSender, socialUserTarget);
                     break;
                 case "accept":
+                    assert socialUserTarget != null;
                     acceptRequest(socialUserSender, socialUserTarget);
                     break;
                 case "deny":
+                    assert socialUserTarget != null;
                     denyRequest(socialUserSender, socialUserTarget);
                     break;
                 case "help":
@@ -106,7 +111,7 @@ public class Friend implements CommandExecutor{
         Player targetPlayer = target.getPlayer();
 
         // Check permissions
-        if(!checkPermission(senderPlayer, "addfriend")){
+        if(!hasPermission(senderPlayer, "addfriend")){
             return;
         }
 
@@ -152,7 +157,7 @@ public class Friend implements CommandExecutor{
         Player senderPlayer = sender.getPlayer();
 
         // Check permissions
-        if(!checkPermission(senderPlayer, "removefriend")){
+        if(!hasPermission(senderPlayer, "removefriend")){
             return;
         }
 
@@ -179,7 +184,7 @@ public class Friend implements CommandExecutor{
         Player targetPlayer = target.getPlayer();
 
         // Check permissions
-        if(!checkPermission(senderPlayer, "acceptfriend")){
+        if(!hasPermission(senderPlayer, "acceptfriend")){
             return;
         }
 
@@ -262,7 +267,7 @@ public class Friend implements CommandExecutor{
     }
 
     // Check if the player has permission to use the command
-    private boolean checkPermission(Player player, String permission){
+    private boolean hasPermission(Player player, String permission){
         if(!player.hasPermission("minecraftsocial."+permission) && !player.isOp()) {
             MessageHandler.noPermission(player);
             return false;

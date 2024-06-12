@@ -4,7 +4,6 @@ import nicholas.minecraftsocial.database.DatabaseConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class SocialUser {
 
 // ---------------------------------------------------- STATIC METHODS
     // Get the SocialUser object for a certain player by their UUID
-    public static SocialUser getSocialUser(UUID uuid) throws SQLException {
+    public static SocialUser getSocialUser(UUID uuid){
 
         if(socialUsers.containsKey(uuid)) {
             SocialUser user = socialUsers.get(uuid);

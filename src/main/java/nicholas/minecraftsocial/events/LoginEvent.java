@@ -14,7 +14,7 @@ import java.util.UUID;
 public class LoginEvent implements Listener {
 
     @EventHandler
-    public void onLogin(PlayerJoinEvent e) throws SQLException {
+    public void onLogin(PlayerJoinEvent e){
 
         // Creates a SocialUser instance for the player. If the player is new, it will create a new instance and add
         // it to the database

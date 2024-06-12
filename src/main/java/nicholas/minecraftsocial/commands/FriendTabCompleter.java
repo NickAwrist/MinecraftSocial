@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,13 +23,7 @@ public class FriendTabCompleter implements TabCompleter {
         }else if(strings.length == 2){
 
             Player player = (Player) commandSender;
-            SocialUser user;
-            try {
-                user = SocialUser.getSocialUser(player.getUniqueId());
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return new ArrayList<>();
-            }
+            SocialUser user = SocialUser.getSocialUser(player.getUniqueId());
 
             switch(strings[0].toLowerCase()){
                 case "add":

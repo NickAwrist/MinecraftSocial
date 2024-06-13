@@ -2,6 +2,7 @@ package nicholas.minecraftsocial.commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import nicholas.minecraftsocial.commons.commons;
 import nicholas.minecraftsocial.helper.MessageHandler;
 import nicholas.minecraftsocial.SocialUser;
 import org.bukkit.Sound;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 public class Friend implements CommandExecutor{
 
+    private static Player senderPlayer;
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
@@ -28,56 +30,56 @@ public class Friend implements CommandExecutor{
             return false;
         }
 
+        senderPlayer = ((Player) commandSender).getPlayer();
+
         Player targetPlayer = null;
 
         if(strings.length == 2){
             targetPlayer = commandSender.getServer().getPlayer(strings[1]);
         }
 
-        try {
-            SocialUser socialUserSender = SocialUser.getSocialUser(((Player) commandSender).getUniqueId());
-            SocialUser socialUserTarget = null;
+        SocialUser socialUserSender = SocialUser.getSocialUser(((Player) commandSender).getUniqueId());
+        SocialUser socialUserTarget = null;
 
 
-            String option = strings[0].toLowerCase();
-            if(strings.length == 2){
-                if(targetPlayer == null){
-                    commandSender.sendMessage("Player not found.");
-                    return false;
-                }
-                socialUserTarget = SocialUser.getSocialUser(targetPlayer.getUniqueId());
+        String option = strings[0].toLowerCase();
+        if(strings.length == 2){
+            if(targetPlayer == null){
+                commandSender.sendMessage("Player not found.");
+                return false;
             }
-
-            switch (option) {
-                case "add":
-                    assert socialUserTarget != null;
-                    addFriend(socialUserSender, socialUserTarget);
-                    break;
-                case "remove":
-                    assert socialUserTarget != null;
-                    removeFriend(socialUserSender, socialUserTarget);
-                    break;
-                case "accept":
-                    assert socialUserTarget != null;
-                    acceptRequest(socialUserSender, socialUserTarget);
-                    break;
-                case "deny":
-                    assert socialUserTarget != null;
-                    denyRequest(socialUserSender, socialUserTarget);
-                    break;
-                case "help":
-                    help(commandSender);
-                    break;
-                case "list":
-                    listFriends(socialUserSender);
-                    break;
-                default:
-                    return false;
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            socialUserTarget = SocialUser.getSocialUser(targetPlayer.getUniqueId());
         }
+
+
+        switch (option) {
+            case "add":
+                assert socialUserTarget != null;
+                addFriend(socialUserSender, socialUserTarget);
+                break;
+            case "remove":
+                assert socialUserTarget != null;
+                removeFriend(socialUserSender, socialUserTarget);
+                break;
+            case "accept":
+                assert socialUserTarget != null;
+                acceptRequest(socialUserSender, socialUserTarget);
+                break;
+            case "deny":
+                assert socialUserTarget != null;
+                denyRequest(socialUserSender, socialUserTarget);
+                break;
+            case "help":
+                help(commandSender);
+                break;
+            case "list":
+                listFriends(socialUserSender);
+                break;
+            default:
+                return false;
+        }
+
+
 
         return true;
 
@@ -104,136 +106,45 @@ public class Friend implements CommandExecutor{
     }
 
     // Sends a friend request to the target player
-    private void addFriend(SocialUser sender, SocialUser target) throws SQLException {
-
-        // Get the Player objects for the sender and target
-        Player senderPlayer = sender.getPlayer();
-        Player targetPlayer = target.getPlayer();
+    private void addFriend(SocialUser sender, SocialUser target) {
 
         // Check permissions
-        if(!hasPermission(senderPlayer, "addfriend")){
+        if(!commons.hasPermission(senderPlayer, "addfriend")){
             return;
         }
 
-        // Check if the sender is already friends with the target
-        if(sender.getFriendsList().contains(target.getUuid())){
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            MessageHandler.chatError(senderPlayer, "You are already friends with this player.");
-            return;
-        }
-
-        // Check if there is already an outgoing request to the target
-        if(sender.getOutgoingRequests().contains(target.getUuid())){
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            MessageHandler.chatError(senderPlayer, "You have already sent a friend request to this player.");
-            return;
-        }
-
-        // Check if there is already an incoming request from the target
-        if(sender.getIncomingRequests().contains(target.getUuid())){
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            MessageHandler.chatError(senderPlayer, "This player has already sent you a friend request. Use /friend accept "+target.getUsername()+" to accept it.");
-            return;
-        }
-
-        // Add the request to the sender and target's lists
-        sender.addOutgoingRequest(target);
-        target.addIncomingRequest(sender);
-
-        // Notify the players
-        if(targetPlayer.isOnline()){
-            targetPlayer.playSound(targetPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
-            MessageHandler.chatLegacyMessage(targetPlayer, "You have received a friend request from " + senderPlayer.getName() + ". Use /friend accept " + senderPlayer.getName() + " to accept it.", true);
-        }
-
-        senderPlayer.playSound(senderPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
-        MessageHandler.chatSuccess(senderPlayer, "Friend request sent successfully.");
+        commons.addFriend(sender, target);
     }
 
     // Removes a friend from the sender's friends list
-    private void removeFriend(SocialUser sender, SocialUser target) throws SQLException {
-
-        // Get the Player objects for the sender
-        Player senderPlayer = sender.getPlayer();
+    private void removeFriend(SocialUser sender, SocialUser target) {
 
         // Check permissions
-        if(!hasPermission(senderPlayer, "removefriend")){
+        if(!commons.hasPermission(senderPlayer, "removefriend")){
             return;
         }
 
-        // Check if the sender is not friends with the target
-        if(!sender.getFriendsList().contains(target.getUuid())){
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            MessageHandler.chatError(senderPlayer, "You are not friends with this player.");
-            return;
-        }
-
-        // Remove the friends from each other's lists
-        sender.removeFriend(target);
-        target.removeFriend(sender);
-
-        // Notify sender
-        MessageHandler.chatSuccess(senderPlayer, "Friend removed successfully.");
+        commons.removeFriend(sender, target);
     }
 
     // Sender accepting target's friend request
-    private void acceptRequest(SocialUser sender, SocialUser target) throws SQLException {
-
-        // Get the Player objects for the sender and target
-        Player senderPlayer = sender.getPlayer();
-        Player targetPlayer = target.getPlayer();
+    private void acceptRequest(SocialUser sender, SocialUser target) {
 
         // Check permissions
-        if(!hasPermission(senderPlayer, "acceptfriend")){
+        if(!commons.hasPermission(senderPlayer, "acceptfriend")){
             return;
         }
 
-        if(!sender.getIncomingRequests().contains(target.getUuid())){
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            MessageHandler.chatError(senderPlayer, "You do not have a friend request from this player.");
-            return;
-        }
-
-        sender.removeIncomingRequest(target);
-        target.removeOutgoingRequest(sender);
-
-        if(targetPlayer.isOnline()){
-            targetPlayer.playSound(targetPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
-            MessageHandler.chatLegacyMessage(targetPlayer, senderPlayer.getName() + " has accepted your friend request.", true);
-        }
-
-        sender.addFriend(target);
-        target.addFriend(sender);
-
-        MessageHandler.chatSuccess(senderPlayer, "You are now friends with " + targetPlayer.getName() + ".");
+        commons.acceptRequest(sender, target);
     }
 
     // Sender denying target's friend request
-    private void denyRequest(SocialUser sender, SocialUser target) throws SQLException {
-
-        // Get the Player objects for the sender and target
-        Player senderPlayer = sender.getPlayer();
-        Player targetPlayer = target.getPlayer();
-
-        if(!sender.getIncomingRequests().contains(target.getUuid())){
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            MessageHandler.chatError(senderPlayer, "You do not have a friend request from this player.");
-            return;
-        }
-
-        sender.removeIncomingRequest(target);
-        target.removeOutgoingRequest(sender);
-
-        if(targetPlayer.isOnline()){
-            targetPlayer.playSound(targetPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
-            MessageHandler.chatLegacyMessage(targetPlayer, senderPlayer.getName() + " has denied your friend request.", true);
-        }
-
-        MessageHandler.chatSuccess(senderPlayer, "Friend request denied.");
+    private void denyRequest(SocialUser sender, SocialUser target) {
+        commons.denyRequest(sender, target);
     }
 
     // Sends player a list of their friends
-    private void listFriends(SocialUser sender) throws SQLException {
+    private void listFriends(SocialUser sender) {
 
         Component message = getFriendsListComponent(sender);
         if(message == null){
@@ -244,7 +155,7 @@ public class Friend implements CommandExecutor{
     }
 
     // Creates a component for user's friend list. Names appear green if the friend is online.
-    private Component getFriendsListComponent(SocialUser user) throws SQLException {
+    private Component getFriendsListComponent(SocialUser user) {
         Component component = null;
         ArrayList<UUID> friendsList = user.getFriendsList();
 
@@ -266,13 +177,5 @@ public class Friend implements CommandExecutor{
         return component;
     }
 
-    // Check if the player has permission to use the command
-    private boolean hasPermission(Player player, String permission){
-        if(!player.hasPermission("minecraftsocial."+permission) && !player.isOp()) {
-            MessageHandler.noPermission(player);
-            return false;
-        }
-        return true;
-    }
 
 }

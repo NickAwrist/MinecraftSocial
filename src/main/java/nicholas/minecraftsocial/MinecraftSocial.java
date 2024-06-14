@@ -5,6 +5,8 @@ import nicholas.minecraftsocial.commands.FriendTabCompleter;
 import nicholas.minecraftsocial.database.DatabaseConnection;
 import nicholas.minecraftsocial.database.JSON_DB;
 import nicholas.minecraftsocial.database.MySQL_DB;
+import nicholas.minecraftsocial.events.ClickPlayerEvent;
+import nicholas.minecraftsocial.events.GUIInventoryClickEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import nicholas.minecraftsocial.events.LoginEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -38,6 +40,8 @@ public final class MinecraftSocial extends JavaPlugin {
 
         // Register LoginEvent
         getServer().getPluginManager().registerEvents(new LoginEvent(), this);
+        getServer().getPluginManager().registerEvents(new ClickPlayerEvent(), this);
+        getServer().getPluginManager().registerEvents(new GUIInventoryClickEvent(), this);
 
         // Register /friend command
         this.getCommand("friend").setExecutor(new Friend());
@@ -72,6 +76,6 @@ public final class MinecraftSocial extends JavaPlugin {
                     databaseConnection.updateDatabase();
                 }
             }
-        }.runTaskTimer(plugin, 0, 20*30);
+        }.runTaskTimer(plugin, 0, 20*5);
     }
 }

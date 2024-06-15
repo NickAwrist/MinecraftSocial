@@ -46,7 +46,7 @@ public class Friend implements CommandExecutor{
         if(strings.length == 2){
             if(targetPlayer == null){
                 commandSender.sendMessage("Player not found.");
-                return false;
+                return true;
             }
             socialUserTarget = SocialUser.getSocialUser(targetPlayer.getUniqueId());
         }
@@ -156,19 +156,24 @@ public class Friend implements CommandExecutor{
 
     // Creates a component for user's friend list. Names appear green if the friend is online.
     private Component getFriendsListComponent(SocialUser user) {
-        Component component = null;
         ArrayList<UUID> friendsList = user.getFriendsList();
 
+        if(friendsList.isEmpty()){
+            return null;
+        }
+
+        Component component = Component.text("");
         SocialUser friend;
         for(int i=0; i<friendsList.size(); i++){
             friend = SocialUser.getSocialUser(friendsList.get(i));
 
-            component = Component.text(friend.getUsername());
-            if(friend.getPlayer().isOnline()){
-                component = component.append(component.color(NamedTextColor.GREEN));
+            Component tempComponent = Component.text(friend.getUsername());
+            if(friend.getPlayer() != null && friend.getPlayer().isOnline()){
+                tempComponent = tempComponent.color(NamedTextColor.GREEN);
             }else{
-                component = component.append(component.color(NamedTextColor.GRAY));
+                tempComponent = tempComponent.color(NamedTextColor.GRAY);
             }
+            component = component.append(tempComponent);
 
             if(i != friendsList.size()-1){
                 component = component.append(Component.text(", "));

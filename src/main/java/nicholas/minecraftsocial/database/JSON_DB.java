@@ -73,7 +73,6 @@ public class JSON_DB implements DatabaseConnection {
                 if(user.getUuid().equals(uuid)) {
                     user.updatePlayerInstance();
 
-                    SocialUser.addSocialUser(user);
                     return user;
                 }
             }

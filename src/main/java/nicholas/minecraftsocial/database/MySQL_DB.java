@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -102,13 +104,14 @@ public class MySQL_DB implements DatabaseConnection {
                 String friendUuidsJson = result.getString("friend_uuids");
                 String incomingRequestsJson = result.getString("incoming_requests");
                 String outgoingRequestsJson = result.getString("outgoing_requests");
+                String dateFirstJoined = result.getString("date_first_join");
 
                 ArrayList<UUID> friendsList = convertJsonToUUIDList(friendUuidsJson);
                 ArrayList<UUID> incomingRequests = convertJsonToUUIDList(incomingRequestsJson);
                 ArrayList<UUID> outgoingRequests = convertJsonToUUIDList(outgoingRequestsJson);
 
                 // Create and return the SocialUser object
-                return new SocialUser(player, friendsList, incomingRequests, outgoingRequests);
+                return new SocialUser(player, friendsList, incomingRequests, outgoingRequests, dateFirstJoined);
 
                 // If the user does not exist, create a fresh social user and add it to the database. (brand-new users)
             } else {
@@ -138,17 +141,19 @@ public class MySQL_DB implements DatabaseConnection {
     @Override
     public void addUser(SocialUser user) {
         try{
-            String query = "INSERT INTO users (uuid, username, friend_uuids, incoming_requests, outgoing_requests) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO users (uuid, username, friend_uuids, incoming_requests, outgoing_requests, date_first_joined) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
 
             String uuid = user.getUuid().toString();
             String username = user.getUsername();
+            String dateFirstJoin = user.getDateFirstJoined();
 
             statement.setString(1, uuid);
             statement.setString(2, username);
             statement.setString(3, "[]");
             statement.setString(4, "[]");
             statement.setString(5, "[]");
+            statement.setString(6, dateFirstJoin);
 
             statement.executeUpdate();
 

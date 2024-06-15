@@ -2,6 +2,7 @@ package nicholas.minecraftsocial;
 
 import nicholas.minecraftsocial.commands.Friend;
 import nicholas.minecraftsocial.commands.FriendTabCompleter;
+import nicholas.minecraftsocial.commands.Profile;
 import nicholas.minecraftsocial.database.DatabaseConnection;
 import nicholas.minecraftsocial.database.JSON_DB;
 import nicholas.minecraftsocial.database.MySQL_DB;
@@ -46,6 +47,7 @@ public final class MinecraftSocial extends JavaPlugin {
         // Register /friend command
         this.getCommand("friend").setExecutor(new Friend());
         this.getCommand("friend").setTabCompleter(new FriendTabCompleter());
+        this.getCommand("profile").setExecutor(new Profile());
     }
 
     @Override

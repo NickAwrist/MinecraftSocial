@@ -6,4 +6,7 @@ commands:
   friend:
     description: Main command for friend operations
     usage: /friend help
+  profile:
+    description: Opens player's profile
+    usage: /profile
 

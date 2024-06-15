@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import nicholas.minecraftsocial.MinecraftSocial;
 import nicholas.minecraftsocial.SocialUser;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -22,6 +23,7 @@ public class PlayerPublicProfileGUI implements Listener, InventoryHolder {
 
     private final Inventory inv;
     private final Player targetPlayer;
+    private final OfflinePlayer offlineTargetPlayer;
     private final SocialUser targetUser;
     private final Player senderPlayer;
     private final SocialUser senderUser;
@@ -29,6 +31,20 @@ public class PlayerPublicProfileGUI implements Listener, InventoryHolder {
     public PlayerPublicProfileGUI(Player sender, Player target) {
         this.targetPlayer = target;
         this.targetUser = SocialUser.getSocialUserFromList(targetPlayer.getUniqueId());
+        this.offlineTargetPlayer = null;
+
+        this.senderPlayer = sender;
+        this.senderUser = SocialUser.getSocialUserFromList(senderPlayer.getUniqueId());
+
+        Component title = Component.text(targetUser.getUsername()+"'s profile");
+        this.inv = MinecraftSocial.getPlugin().getServer().createInventory(this, 27, title);
+
+        initializeItems();
+    }
+    public PlayerPublicProfileGUI(Player sender, OfflinePlayer target) {
+        this.targetUser = SocialUser.getSocialUser(target.getUniqueId());
+        this.offlineTargetPlayer = target;
+        targetPlayer = null;
 
         this.senderPlayer = sender;
         this.senderUser = SocialUser.getSocialUserFromList(senderPlayer.getUniqueId());
@@ -40,6 +56,7 @@ public class PlayerPublicProfileGUI implements Listener, InventoryHolder {
     }
 
     public Player getTargetPlayer(){return this.targetPlayer;}
+    public OfflinePlayer getOfflineTargetPlayer(){return this.offlineTargetPlayer;}
 
     @Override
     public @NotNull Inventory getInventory() {
@@ -50,8 +67,15 @@ public class PlayerPublicProfileGUI implements Listener, InventoryHolder {
 
         ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD, 1);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
-        skullMeta.setOwningPlayer(targetPlayer);
-        skullMeta.displayName(Component.text(targetPlayer.getName()));
+
+        if(targetPlayer != null){
+            skullMeta.setOwningPlayer(targetPlayer);
+            skullMeta.displayName(Component.text(targetPlayer.getName()));
+        }else{
+            skullMeta.setOwningPlayer(offlineTargetPlayer);
+            skullMeta.displayName(Component.text(offlineTargetPlayer.getName()));
+        }
+
         playerHead.setItemMeta(skullMeta);
 
         ItemStack friendStatus;
@@ -67,19 +91,19 @@ public class PlayerPublicProfileGUI implements Listener, InventoryHolder {
             friendStatus.setItemMeta(limeMeta);
         }
 
-
-        long firstPlayed = targetPlayer.getFirstPlayed();
-        Date firstPlayedDate = new Date(firstPlayed);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String firstPlayedString = sdf.format(firstPlayedDate);
-
         ItemStack firstPlayedItem = new ItemStack(Material.CAKE);
         ItemMeta firstPlayedMeta = firstPlayedItem.getItemMeta();
-        firstPlayedMeta.displayName(Component.text("First Login: " + firstPlayedString));
+        firstPlayedMeta.displayName(Component.text("First Login: " + targetUser.getDateFirstJoined()));
         firstPlayedItem.setItemMeta(firstPlayedMeta);
 
 
-        int playTimeTicks = targetPlayer.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        int playTimeTicks;
+        if(targetPlayer != null){
+            playTimeTicks = targetPlayer.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        }else{
+            playTimeTicks = offlineTargetPlayer.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        }
+
         long playTimeMillis = playTimeTicks * 50L;
 
         long hours = TimeUnit.MILLISECONDS.toHours(playTimeMillis);

@@ -7,5 +7,6 @@ DatabaseType:
     username: "your_username"
     password: "your_password"
 
-
-
+# This will show the date the player first logged in a user's profile.
+# This will not be accurate if the player joined before the plugin has been loaded.
+enable_join_date: true

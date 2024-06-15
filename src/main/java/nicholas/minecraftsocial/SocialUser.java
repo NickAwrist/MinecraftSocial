@@ -4,6 +4,8 @@ import nicholas.minecraftsocial.database.DatabaseConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +22,7 @@ public class SocialUser {
     private final ArrayList<UUID> friendsList;
     private final ArrayList<UUID> incomingRequests;
     private final ArrayList<UUID> outgoingRequests;
+    private final String dateFirstJoined;
 
     public SocialUser(Player player) {
         this.player = player;
@@ -29,16 +32,21 @@ public class SocialUser {
         this.incomingRequests = new ArrayList<>();
         this.outgoingRequests = new ArrayList<>();
 
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+        this.dateFirstJoined = currentDate.format(formatter);
+
         addSocialUser(this);
     }
 
-    public SocialUser(Player player, ArrayList<UUID> friendsList, ArrayList<UUID> incomingRequests, ArrayList<UUID> outgoingRequests) {
+    public SocialUser(Player player, ArrayList<UUID> friendsList, ArrayList<UUID> incomingRequests, ArrayList<UUID> outgoingRequests, String dateFirstJoined) {
         this.player = player;
         this.username = player.getName();
         this.uuid = player.getUniqueId();
         this.friendsList = friendsList;
         this.incomingRequests = incomingRequests;
         this.outgoingRequests = outgoingRequests;
+        this.dateFirstJoined = dateFirstJoined;
 
         addSocialUser(this);
     }
@@ -47,16 +55,16 @@ public class SocialUser {
     // Get the SocialUser object for a certain player by their UUID
     public static SocialUser getSocialUser(UUID uuid){
 
+        SocialUser user;
         if(socialUsers.containsKey(uuid)) {
-            SocialUser user = socialUsers.get(uuid);
+            user = socialUsers.get(uuid);
             user.updatePlayerInstance();
-
-            socialUsers.put(uuid, user);
-
-            return user;
         }else{
-            return databaseConnection.getSocialUser(uuid);
+            user = databaseConnection.getSocialUser(uuid);
         }
+
+        addSocialUser(user);
+        return user;
     }
 
     public static SocialUser getSocialUserFromList(UUID uuid) {
@@ -66,11 +74,13 @@ public class SocialUser {
     // Add a SocialUser to the static HashMap
     public static void addSocialUser(SocialUser user) {
         socialUsers.put(user.getUuid(), user);
+        databaseConnection.setUpdatePending(true);
     }
 
     // Remove a SocialUser from the static HashMap
     public static void removeSocialUser(Player player) {
         socialUsers.remove(player.getUniqueId());
+        databaseConnection.setUpdatePending(true);
     }
 
     public static ArrayList<SocialUser> usersAsList() {
@@ -99,6 +109,9 @@ public class SocialUser {
     }
     public String getUsername() {
         return username;
+    }
+    public String getDateFirstJoined(){
+        return this.dateFirstJoined;
     }
     public ArrayList<UUID> getFriendsList() {
         return friendsList;

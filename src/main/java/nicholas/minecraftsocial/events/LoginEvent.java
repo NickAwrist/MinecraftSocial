@@ -46,7 +46,7 @@ public class LoginEvent implements Listener {
             message = message.append(Component.text(onlineFriends)
                     .color(NamedTextColor.YELLOW));
         }
-        message = message.append(Component.text(" online.")
+        message = message.append(Component.text(" friends online.")
                 .color(NamedTextColor.GRAY));
         return message;
     }

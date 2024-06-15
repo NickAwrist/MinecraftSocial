@@ -139,4 +139,10 @@ public class SocialUser {
         databaseConnection.setUpdatePending(true);
     }
 
+
+    @Override
+    public String toString(){
+        return username + " " + uuid + " Friends: " + friendsList.toString();
+    }
+
 }

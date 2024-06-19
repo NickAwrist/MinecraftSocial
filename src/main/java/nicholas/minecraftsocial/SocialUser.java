@@ -59,8 +59,12 @@ public class SocialUser {
         if(socialUsers.containsKey(uuid)) {
             user = socialUsers.get(uuid);
             user.updatePlayerInstance();
-        }else{
+        }else {
             user = databaseConnection.getSocialUser(uuid);
+        }
+
+        if(user == null){
+            return null;
         }
 
         addSocialUser(user);

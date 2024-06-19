@@ -18,12 +18,12 @@ public class JSON_DB implements DatabaseConnection {
     public JSON_DB() {
         if(!file.exists()) {
             try {
-                MessageHandler.debug("INFO", "JSON file not found. Creating...");
+                MessageHandler.debug(MessageHandler.DebugType.INFO, "JSON file not found. Creating...");
                 file.createNewFile();
                 initializeEmptyJsonFile();
-                MessageHandler.debug("INFO", "JSON file created.");
+                MessageHandler.debug(MessageHandler.DebugType.INFO, "JSON file created.");
             } catch (Exception e) {
-                MessageHandler.debug("ERROR", "Failed to create JSON file.");
+                MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to create JSON file.");
             }
         }
     }
@@ -32,7 +32,7 @@ public class JSON_DB implements DatabaseConnection {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write("[]"); // Write an empty JSON array to the file
         } catch (IOException e) {
-            MessageHandler.debug("ERROR", "Failed to initialize JSON file with empty array.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to initialize JSON file with empty array.");
         }
     }
 
@@ -48,13 +48,13 @@ public class JSON_DB implements DatabaseConnection {
     // Connect to JSON database
     @Override
     public void connect() {
-        MessageHandler.debug("INFO", "Connected to JSON database.");
+        MessageHandler.debug(MessageHandler.DebugType.INFO, "Connected to JSON database.");
     }
 
     // Disconnect from JSON database
     @Override
     public void disconnect() {
-        MessageHandler.debug("INFO", "Disconnected from JSON database.");
+        MessageHandler.debug(MessageHandler.DebugType.INFO, "Disconnected from JSON database.");
     }
 
 
@@ -79,7 +79,7 @@ public class JSON_DB implements DatabaseConnection {
 
 
         } catch (Exception e) {
-            MessageHandler.debug("ERROR", "Failed to read JSON file.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to read JSON file.");
 
         }
 
@@ -118,7 +118,7 @@ public class JSON_DB implements DatabaseConnection {
             }
             reader.close();
         } catch (IOException e) {
-            MessageHandler.debug("ERROR", "Failed to read users from JSON file.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to read users from JSON file.");
         }
 
         // Create a map for easy merging
@@ -141,7 +141,7 @@ public class JSON_DB implements DatabaseConnection {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            MessageHandler.debug("ERROR", "Failed to write users to JSON file.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to write users to JSON file.");
             throw new RuntimeException(e);
         }
 

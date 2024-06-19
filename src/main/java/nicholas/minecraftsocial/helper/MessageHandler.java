@@ -62,15 +62,8 @@ public class MessageHandler {
 
 // CONSOLE MESSAGES ----------------------------------------------------
 
-    public static void debug(String type, String origin) {
-        DebugType debugType;
-        try {
-            debugType = DebugType.valueOf(type.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            MinecraftSocial.getPlugin().getComponentLogger().warn("Invalid debug type: {}", type);
-            return;
-        }
-        debugType.sendDebug(origin);
+    public static void debug(DebugType type, String origin) {
+        type.sendDebug(origin);
     }
 
     public enum DebugType {

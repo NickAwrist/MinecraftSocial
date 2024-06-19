@@ -12,13 +12,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static nicholas.minecraftsocial.commons.commons.createButton;
 
 public class FriendsGUI implements InventoryHolder {
 
@@ -63,20 +64,13 @@ public class FriendsGUI implements InventoryHolder {
     private void initializeItems() {
         populateFriends();
 
-        inv.setItem(BACK_BUTTON_POS, createNavigationButton(Material.RED_STAINED_GLASS, "<- Back", NamedTextColor.RED));
+        inv.setItem(BACK_BUTTON_POS, createButton(Material.RED_STAINED_GLASS, "<- Back", NamedTextColor.RED));
 
         if(currentPage < (int) (friendsListSize / 46.0)) {
-            inv.setItem(NEXT_BUTTON_POS, createNavigationButton(Material.GREEN_STAINED_GLASS, "Next ->", NamedTextColor.GREEN));
+            inv.setItem(NEXT_BUTTON_POS, createButton(Material.GREEN_STAINED_GLASS, "Next ->", NamedTextColor.GREEN));
         }
     }
 
-    private ItemStack createNavigationButton(Material material, String name, NamedTextColor color) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text(name).color(color));
-        item.setItemMeta(meta);
-        return item;
-    }
 
     private void populateFriends() {
         List<ItemStack> onlineFriends = new ArrayList<>();
@@ -130,8 +124,10 @@ public class FriendsGUI implements InventoryHolder {
             } else{
                 new FriendsGUI(user, gui.currentPage - 1).open(gui.player);
             }
+
         } else if(event.getSlot() == gui.NEXT_BUTTON_POS) {
             new FriendsGUI(user, gui.currentPage + 1).open(gui.player);
+
         } else if(clickedItem.getType() == Material.PLAYER_HEAD) {
             SkullMeta meta = (SkullMeta) clickedItem.getItemMeta();
             OfflinePlayer offlinePlayer = meta.getOwningPlayer();

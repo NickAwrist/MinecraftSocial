@@ -3,6 +3,7 @@ package nicholas.minecraftsocial.commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import nicholas.minecraftsocial.commons.commons;
+import nicholas.minecraftsocial.guis.RemoveFriendConfirmationGUI;
 import nicholas.minecraftsocial.helper.MessageHandler;
 import nicholas.minecraftsocial.SocialUser;
 import org.bukkit.Sound;
@@ -45,12 +46,12 @@ public class Friend implements CommandExecutor{
         String option = strings[0].toLowerCase();
         if(strings.length == 2){
             if(targetPlayer == null){
-                commandSender.sendMessage("Player not found.");
+                senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+                MessageHandler.chatError(senderPlayer, "Player not found.");
                 return true;
             }
             socialUserTarget = SocialUser.getSocialUser(targetPlayer.getUniqueId());
         }
-
 
         switch (option) {
             case "add":
@@ -124,7 +125,13 @@ public class Friend implements CommandExecutor{
             return;
         }
 
-        commons.removeFriend(sender, target);
+        if(!sender.getFriendsList().contains(target.getUuid())){
+            senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+            MessageHandler.chatError(sender.getPlayer(), "You are not friends with this player.");
+            return;
+        }
+
+        new RemoveFriendConfirmationGUI(sender, target).open(sender.getPlayer());
     }
 
     // Sender accepting target's friend request

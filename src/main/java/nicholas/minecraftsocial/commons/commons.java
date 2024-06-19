@@ -1,11 +1,23 @@
 package nicholas.minecraftsocial.commons;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import nicholas.minecraftsocial.SocialUser;
 import nicholas.minecraftsocial.helper.MessageHandler;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
+import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.concurrent.TimeUnit;
 
 public class commons {
+
+
+// COMMON FRIEND FUNCTIONS --------------------------------------------------------------------------------------------
 
     // Sends a friend request to the target player
     public static void addFriend(SocialUser sender, SocialUser target) {
@@ -54,13 +66,6 @@ public class commons {
 
         // Get the Player objects for the sender
         Player senderPlayer = sender.getPlayer();
-
-        // Check if the sender is not friends with the target
-        if(!sender.getFriendsList().contains(target.getUuid())){
-            senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-            MessageHandler.chatError(senderPlayer, "You are not friends with this player.");
-            return;
-        }
 
         // Remove the friends from each other's lists
         sender.removeFriend(target);
@@ -119,6 +124,37 @@ public class commons {
         }
 
         MessageHandler.chatSuccess(senderPlayer, "Friend request denied.");
+    }
+
+// --------------------------------------------------------------------------------------------------------------------
+
+    // Get the play time of a player in HH:MM:SS format
+    public static String getPlayTimeString(Player player){
+        int playTimeTicks = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        long playTimeMillis = playTimeTicks * 50L;
+        long hours = TimeUnit.MILLISECONDS.toHours(playTimeMillis);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(playTimeMillis) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(playTimeMillis) % 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+    public static String getPlayTimeString(OfflinePlayer player){
+        int playTimeTicks = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        long playTimeMillis = playTimeTicks * 50L;
+        long hours = TimeUnit.MILLISECONDS.toHours(playTimeMillis);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(playTimeMillis) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(playTimeMillis) % 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    // Create a button ItemStack with a name and color
+    public static ItemStack createButton(Material material, String name, NamedTextColor color) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text(name).color(color));
+        item.setItemMeta(meta);
+        return item;
     }
 
     // Check if the player has permission to use the command

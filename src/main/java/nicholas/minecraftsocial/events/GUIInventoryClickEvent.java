@@ -5,6 +5,7 @@ import nicholas.minecraftsocial.commons.commons;
 import nicholas.minecraftsocial.guis.FriendsGUI;
 import nicholas.minecraftsocial.guis.PlayerPersonalProfileGUI;
 import nicholas.minecraftsocial.guis.PlayerPublicProfileGUI;
+import nicholas.minecraftsocial.guis.RemoveFriendConfirmationGUI;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -31,44 +32,15 @@ public class GUIInventoryClickEvent implements Listener {
             handlePersonalProfileGUI();
         }else if(inventory.getHolder() instanceof FriendsGUI){
             handleFriendsGUI();
+        }else if(inventory.getHolder() instanceof RemoveFriendConfirmationGUI){
+            handleRemoveFriendConfirmationGUI();
         }
     }
 
     private void handlePublicProfileGUI(){
         e.setCancelled(true);
 
-        Player p = (Player) e.getWhoClicked();
-        Player targetPlayer = ((PlayerPublicProfileGUI) inventory.getHolder()).getTargetPlayer();
-        OfflinePlayer offlineTargetPlayer = null;
-
-        if(targetPlayer == null){
-            offlineTargetPlayer = ((PlayerPublicProfileGUI) inventory.getHolder()).getOfflineTargetPlayer();
-        }
-
-        SocialUser user = SocialUser.getSocialUserFromList(p.getUniqueId());
-        SocialUser target;
-
-        if(targetPlayer != null){
-            target = SocialUser.getSocialUserFromList(targetPlayer.getUniqueId());
-        }else{
-            target = SocialUser.getSocialUserFromList(offlineTargetPlayer.getUniqueId());
-        }
-
-        ItemStack clickedItem = e.getCurrentItem();
-        if(clickedItem == null || clickedItem.getType() == Material.AIR) return;
-
-        switch(clickedItem.getType()) {
-            case LIME_WOOL:
-                commons.addFriend(user, target);
-                p.closeInventory();
-                break;
-            case RED_WOOL:
-                commons.removeFriend(user, target);
-                p.closeInventory();
-                break;
-            default:
-                break;
-        }
+        PlayerPublicProfileGUI.handlePlayerPublicProfileClick(e, (PlayerPublicProfileGUI) inventory.getHolder());
     }
 
     private void handlePersonalProfileGUI(){
@@ -88,6 +60,12 @@ public class GUIInventoryClickEvent implements Listener {
         e.setCancelled(true);
 
         FriendsGUI.handleFriendListClick(e, (FriendsGUI) inventory.getHolder());
+    }
+
+    private void handleRemoveFriendConfirmationGUI(){
+        e.setCancelled(true);
+
+        RemoveFriendConfirmationGUI.handleRemoveFriendConfirmationClick(e, (RemoveFriendConfirmationGUI) inventory.getHolder());
     }
 
 }

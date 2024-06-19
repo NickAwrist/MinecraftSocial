@@ -12,7 +12,7 @@ public class Profile implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if(!(commandSender instanceof Player)){
-            MessageHandler.debug("ERROR", "You must be a player to execute this command.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "You must be a player to execute this command.");
             return true;
         }
 

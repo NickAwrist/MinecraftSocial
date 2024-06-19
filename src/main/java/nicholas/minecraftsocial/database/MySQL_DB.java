@@ -23,17 +23,17 @@ public class MySQL_DB implements DatabaseConnection {
     @Override
     public void connect() {
 
-        MessageHandler.debug("INFO", "Connecting to MySQL database.");
+        MessageHandler.debug(MessageHandler.DebugType.INFO, "Connecting to MySQL database.");
 
         try {
             if (connection != null && !connection.isClosed()) {
                 return;
             }
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            MessageHandler.debug("INFO", "Connected to MySQL database...");
+            MessageHandler.debug(MessageHandler.DebugType.INFO, "Connected to MySQL database...");
             checkAndCreateTable();
         } catch (SQLException e) {
-            MessageHandler.debug("ERROR", "Failed to connect from MySQL database.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to connect from MySQL database.");
             throw new RuntimeException(e);
         }
     }
@@ -50,9 +50,9 @@ public class MySQL_DB implements DatabaseConnection {
 
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(createTableQuery);
-            MessageHandler.debug("INFO", "Checked and ensured users table exists.");
+            MessageHandler.debug(MessageHandler.DebugType.INFO, "Checked and ensured users table exists.");
         } catch (SQLException e) {
-            MessageHandler.debug("ERROR", "Failed to create users table.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to create users table.");
             throw new RuntimeException(e);
         }
     }
@@ -68,14 +68,14 @@ public class MySQL_DB implements DatabaseConnection {
 
     @Override
     public void disconnect() {
-        MessageHandler.debug("INFO", "Disconnecting from MySQL database...");
+        MessageHandler.debug(MessageHandler.DebugType.INFO, "Disconnecting from MySQL database...");
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
-            MessageHandler.debug("INFO", "Disconnected from MySQL database.");
+            MessageHandler.debug(MessageHandler.DebugType.INFO, "Disconnected from MySQL database.");
         } catch (SQLException e) {
-            MessageHandler.debug("ERROR", "Failed to disconnect from MySQL database.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to disconnect from MySQL database.");
             throw new RuntimeException(e);
         }
     }
@@ -92,7 +92,7 @@ public class MySQL_DB implements DatabaseConnection {
             Player player = Bukkit.getPlayer(uuid);
 
             if (player == null) {
-                MessageHandler.debug("ERROR", "Failed to get player instance from UUID.");
+                MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to get player instance from UUID.");
                 return null;
             }
 
@@ -122,7 +122,7 @@ public class MySQL_DB implements DatabaseConnection {
             }
 
         }catch (SQLException e) {
-            MessageHandler.debug("ERROR", "Failed to get SocialUser from MySQL database.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to get SocialUser from MySQL database.");
             throw new RuntimeException(e);
         }
     }
@@ -158,7 +158,7 @@ public class MySQL_DB implements DatabaseConnection {
             statement.executeUpdate();
 
         }catch (SQLException e) {
-            MessageHandler.debug("ERROR", "Failed to add user to MySQL database.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to add user to MySQL database.");
             throw new RuntimeException(e);
         }
     }
@@ -175,7 +175,7 @@ public class MySQL_DB implements DatabaseConnection {
             statement.executeUpdate();
 
         }catch (SQLException e) {
-            MessageHandler.debug("ERROR", "Failed to remove user from MySQL database.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to remove user from MySQL database.");
             throw new RuntimeException(e);
         }
     }
@@ -199,7 +199,7 @@ public class MySQL_DB implements DatabaseConnection {
                 setUpdatePending(false);
             }
         } catch (SQLException e) {
-            MessageHandler.debug("ERROR", "Failed to update database in MySQL database.");
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to update database in MySQL database.");
         }
     }
 }

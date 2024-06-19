@@ -123,4 +123,7 @@ public class PlayerPublicProfileGUI implements Listener, InventoryHolder {
     }
 
 
+    public void open(Player player) {
+        player.openInventory(inv);
+    }
 }

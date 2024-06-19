@@ -3,6 +3,7 @@ package nicholas.minecraftsocial;
 import nicholas.minecraftsocial.commands.Friend;
 import nicholas.minecraftsocial.commands.FriendTabCompleter;
 import nicholas.minecraftsocial.commands.Profile;
+import nicholas.minecraftsocial.commands.debugFriendList;
 import nicholas.minecraftsocial.database.DatabaseConnection;
 import nicholas.minecraftsocial.database.JSON_DB;
 import nicholas.minecraftsocial.database.MySQL_DB;
@@ -48,6 +49,8 @@ public final class MinecraftSocial extends JavaPlugin {
         this.getCommand("friend").setExecutor(new Friend());
         this.getCommand("friend").setTabCompleter(new FriendTabCompleter());
         this.getCommand("profile").setExecutor(new Profile());
+
+        //this.getCommand("debugFriendList").setExecutor(new debugFriendList());
     }
 
     @Override

@@ -80,29 +80,14 @@ public class GUIInventoryClickEvent implements Listener {
         if(clickedItem == null || clickedItem.getType() == Material.AIR) return;
 
         if(clickedItem.getType() == Material.NAME_TAG){
-            FriendsGUI gui = new FriendsGUI(user);
-            user.getPlayer().openInventory(gui.getInventory());
+            new FriendsGUI(user, 0).open(p);
         }
     }
 
     private void handleFriendsGUI(){
         e.setCancelled(true);
-        Player p = (Player) e.getWhoClicked();
-        SocialUser user = SocialUser.getSocialUserFromList(p.getUniqueId());
 
-        ItemStack clickedItem = e.getCurrentItem();
-        if(clickedItem == null || clickedItem.getType() == Material.AIR) return;
-
-        if(clickedItem.getType() == Material.BARRIER){
-            PlayerPersonalProfileGUI gui = new PlayerPersonalProfileGUI(user.getPlayer());
-            user.getPlayer().openInventory(gui.getInventory());
-        }else if(clickedItem.getType() == Material.PLAYER_HEAD){
-            SkullMeta meta = (SkullMeta) clickedItem.getItemMeta();
-            OfflinePlayer player = meta.getOwningPlayer();
-
-            PlayerPublicProfileGUI gui = new PlayerPublicProfileGUI(p, player);
-            p.openInventory(gui.getInventory());
-        }
+        FriendsGUI.handleFriendListClick(e, (FriendsGUI) inventory.getHolder());
     }
 
 }

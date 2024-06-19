@@ -78,4 +78,8 @@ public class PlayerPersonalProfileGUI implements InventoryHolder {
         inv.setItem(14, playTimeItem);
         inv.setItem(4, playerHead);
     }
+
+    public void open(Player player) {
+        player.openInventory(inv);
+    }
 }

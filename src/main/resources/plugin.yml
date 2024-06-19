@@ -9,4 +9,7 @@ commands:
   profile:
     description: Opens player's profile
     usage: /profile
+#  debugFriendList:
+#    description: Debug command to view friend list
+#    usage: /debugFriendList {add/remove} {amount}
 

@@ -29,10 +29,11 @@ public class MessageHandler {
     }
     public static void chatMessage(Player player, Component origin, boolean usePrefix, boolean allGray){
         if(allGray){
-            origin = origin.append(origin.color(NamedTextColor.GRAY));
+            origin = origin.color(NamedTextColor.GRAY);
         }
         sendChat(player, origin, usePrefix);
     }
+
 
     // Send player a success message. All green
     public static void chatSuccess(Player player, String origin){

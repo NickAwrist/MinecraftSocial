@@ -25,11 +25,13 @@ public class Friend implements CommandExecutor{
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if(!(commandSender instanceof Player)){
-            return false;
+            commandSender.sendMessage("You must be a player to use this command.");
+            return true;
         }
 
         if(strings.length < 1){
-            return false;
+            help(commandSender);
+            return true;
         }
 
         String commandString = strings[0].toLowerCase();
@@ -55,6 +57,9 @@ public class Friend implements CommandExecutor{
                 MessageHandler.chatError(senderPlayer, "Player not found.");
                 return true;
             }
+        }else if(multipleArgCommand(commandString)){
+            MessageHandler.chatError(senderPlayer, "You must specify a player.");
+            return true;
         }
 
         switch (commandString) {

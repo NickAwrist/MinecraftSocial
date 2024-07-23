@@ -21,7 +21,7 @@ public class FriendTabCompleter implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (strings.length == 1) {
-            return Arrays.asList("add", "remove", "accept", "deny", "list", "help");
+            return Arrays.asList("add", "remove", "accept", "deny", "list", "help", "requests");
         } else if (strings.length == 2) {
 
             // Ensure the command sender is a player

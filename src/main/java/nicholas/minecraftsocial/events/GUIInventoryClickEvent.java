@@ -1,10 +1,7 @@
 package nicholas.minecraftsocial.events;
 
+import nicholas.minecraftsocial.guis.*;
 import nicholas.minecraftsocial.models.SocialUser;
-import nicholas.minecraftsocial.guis.FriendsGUI;
-import nicholas.minecraftsocial.guis.PlayerPersonalProfileGUI;
-import nicholas.minecraftsocial.guis.PlayerPublicProfileGUI;
-import nicholas.minecraftsocial.guis.RemoveFriendConfirmationGUI;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,6 +28,10 @@ public class GUIInventoryClickEvent implements Listener {
             handleFriendsGUI();
         }else if(inventory.getHolder() instanceof RemoveFriendConfirmationGUI){
             handleRemoveFriendConfirmationGUI();
+        }else if(inventory.getHolder() instanceof RequestsGUI){
+            handleRequestsGUI();
+        }else if(inventory.getHolder() instanceof RequestConfirmationGUI){
+            handleRequestConfirmationGUI();
         }
     }
 
@@ -63,6 +64,18 @@ public class GUIInventoryClickEvent implements Listener {
         e.setCancelled(true);
 
         RemoveFriendConfirmationGUI.handleRemoveFriendConfirmationClick(e, (RemoveFriendConfirmationGUI) inventory.getHolder());
+    }
+
+    private void handleRequestsGUI(){
+        e.setCancelled(true);
+
+        RequestsGUI.handleRequestListClick(e, (RequestsGUI) inventory.getHolder());
+    }
+
+    private void handleRequestConfirmationGUI(){
+        e.setCancelled(true);
+
+        RequestConfirmationGUI.handleRequestConfirmationClick(e, (RequestConfirmationGUI) inventory.getHolder());
     }
 
 }

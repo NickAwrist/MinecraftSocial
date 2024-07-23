@@ -1,6 +1,7 @@
 package nicholas.minecraftsocial.events;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import nicholas.minecraftsocial.models.SocialUser;
 import nicholas.minecraftsocial.helper.MessageHandler;
@@ -27,6 +28,21 @@ public class LoginEvent implements Listener {
             if(friend != null && friend.getPlayer().isOnline()){
                 onlineFriends++;
             }
+        }
+
+        if(!user.getIncomingRequests().isEmpty()){
+            Component incomingRequestsMessage = Component.text("You have ")
+                    .color(NamedTextColor.GRAY)
+                    .append(Component.text(user.getIncomingRequests().size())
+                            .color(NamedTextColor.GREEN))
+                    .append(Component.text(" friend requests. ")
+                            .color(NamedTextColor.GRAY))
+                    .append(Component.text("Click here to view them.")
+                            .color(NamedTextColor.YELLOW)
+                            .clickEvent(ClickEvent.runCommand("/friend requests")));
+
+            // Send the message to the player
+            MessageHandler.chatMessage(user.getPlayer(), incomingRequestsMessage, true);
         }
 
         // Send player message indicating the number of friends they have online

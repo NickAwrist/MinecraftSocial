@@ -5,6 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import nicholas.minecraftsocial.commons.commons;
 import nicholas.minecraftsocial.exceptions.PlayerNotFoundException;
 import nicholas.minecraftsocial.guis.RemoveFriendConfirmationGUI;
+import nicholas.minecraftsocial.guis.RequestsGUI;
 import nicholas.minecraftsocial.helper.MessageHandler;
 import nicholas.minecraftsocial.models.SocialPlayer;
 import nicholas.minecraftsocial.models.SocialUser;
@@ -20,99 +21,101 @@ import java.util.UUID;
 
 public class Friend implements CommandExecutor{
 
-    private static Player senderPlayer;
+        private static Player senderPlayer;
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if(!(commandSender instanceof Player)){
-            commandSender.sendMessage("You must be a player to use this command.");
-            return true;
-        }
-
-        if(strings.length < 1){
-            help(commandSender);
-            return true;
-        }
-
-        String commandString = strings[0].toLowerCase();
-
-        senderPlayer = ((Player) commandSender).getPlayer();
-
-        if(senderPlayer == null){
-            return false;
-        }
-
-        SocialUser socialUserSender = SocialUser.getSocialUser(senderPlayer.getUniqueId());
-
-        SocialPlayer targetPlayer;
-        SocialUser socialUserTarget = null;
-
-        if(strings.length == 2 && multipleArgCommand(commandString)){
-            try {
-                targetPlayer = new SocialPlayer(strings[1]);
-                socialUserTarget = SocialUser.getSocialUser(targetPlayer.getUUID());
-
-            } catch (PlayerNotFoundException e) {
-                senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-                MessageHandler.chatError(senderPlayer, "Player not found.");
+        @Override
+        public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+            if (!(commandSender instanceof Player)) {
+                commandSender.sendMessage("You must be a player to use this command.");
                 return true;
             }
-        }else if(multipleArgCommand(commandString)){
-            MessageHandler.chatError(senderPlayer, "You must specify a player.");
+
+            if (strings.length < 1) {
+                help(commandSender);
+                return true;
+            }
+
+            String commandString = strings[0].toLowerCase();
+
+            senderPlayer = ((Player) commandSender).getPlayer();
+
+            if (senderPlayer == null) {
+                return false;
+            }
+
+            SocialUser socialUserSender = SocialUser.getSocialUser(senderPlayer.getUniqueId());
+
+            SocialPlayer targetPlayer;
+            SocialUser socialUserTarget = null;
+
+            if (strings.length == 2 && multipleArgCommand(commandString)) {
+                try {
+                    targetPlayer = new SocialPlayer(strings[1]);
+                    socialUserTarget = SocialUser.getSocialUser(targetPlayer.getUUID());
+                } catch (PlayerNotFoundException e) {
+                    senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+                    MessageHandler.chatError(senderPlayer, "Player not found.");
+                    return true;
+                }
+            } else if (multipleArgCommand(commandString)) {
+                MessageHandler.chatError(senderPlayer, "You must specify a player.");
+                return true;
+            }
+
+            switch (commandString) {
+                case "add":
+                    assert socialUserTarget != null;
+                    addFriend(socialUserSender, socialUserTarget);
+                    break;
+                case "remove":
+                    assert socialUserTarget != null;
+                    removeFriend(socialUserSender, socialUserTarget);
+                    break;
+                case "accept":
+                    assert socialUserTarget != null;
+                    acceptRequest(socialUserSender, socialUserTarget);
+                    break;
+                case "deny":
+                    assert socialUserTarget != null;
+                    denyRequest(socialUserSender, socialUserTarget);
+                    break;
+                case "help":
+                    help(commandSender);
+                    break;
+                case "list":
+                    listFriends(socialUserSender);
+                    break;
+                case "requests":
+                    listRequests(socialUserSender);
+                    break;
+                default:
+                    return false;
+            }
+
             return true;
         }
 
-        switch (commandString) {
-            case "add":
-                assert socialUserTarget != null;
-                addFriend(socialUserSender, socialUserTarget);
-                break;
-            case "remove":
-                assert socialUserTarget != null;
-                removeFriend(socialUserSender, socialUserTarget);
-                break;
-            case "accept":
-                assert socialUserTarget != null;
-                acceptRequest(socialUserSender, socialUserTarget);
-                break;
-            case "deny":
-                assert socialUserTarget != null;
-                denyRequest(socialUserSender, socialUserTarget);
-                break;
-            case "help":
-                help(commandSender);
-                break;
-            case "list":
-                listFriends(socialUserSender);
-                break;
-            default:
-                return false;
+        private void help(CommandSender commandSender) {
+            Player player = (Player) commandSender;
+            Component message = Component.text("");
+
+            message = message.append(Component.text("/friend list - List all of your friends.").color(NamedTextColor.GRAY));
+            message = message.append(Component.newline());
+            message = message.append(Component.text("/friend add <player> - Send a friend request to a player.").color(NamedTextColor.GRAY));
+            message = message.append(Component.newline());
+            message = message.append(Component.text("/friend remove <player> - Remove a player from your friends list.").color(NamedTextColor.GRAY));
+            message = message.append(Component.newline());
+            message = message.append(Component.text("/friend accept <player> - Accept a friend request from a player.").color(NamedTextColor.GRAY));
+            message = message.append(Component.newline());
+            message = message.append(Component.text("/friend deny <player> - Deny a friend request from a player.").color(NamedTextColor.GRAY));
+            message = message.append(Component.newline());
+            message = message.append(Component.text("/friend requests - List all of your incoming friend requests.").color(NamedTextColor.GRAY));
+
+            MessageHandler.chatMessage(player, message, true);
         }
 
-
-
-        return true;
-
-    }
-
-    private void help(CommandSender commandSender){
-
-        Player player = (Player) commandSender;
-        Component message = Component.text("");
-
-        MessageHandler.chatLegacyMessage(player, "Friend Commands:", true);
-
-        message = message.append(Component.text("/friend list - List all of your friends."));
-        message = message.append(Component.newline());
-        message = message.append(Component.text("/friend add <player> - Send a friend request to a player."));
-        message = message.append(Component.newline());
-        message = message.append(Component.text("/friend remove <player> - Remove a player from your friends list."));
-        message = message.append(Component.newline());
-        message = message.append(Component.text("/friend accept <player> - Accept a friend request from a player."));
-        message = message.append(Component.newline());
-        message = message.append(Component.text("/friend deny <player> - Deny a friend request from a player."));
-
-        MessageHandler.chatMessage(player, message, false, true);
+    private void listRequests(SocialUser sender) {
+        new RequestsGUI(sender, 0).open(sender.getPlayer());
     }
 
     // Sends a friend request to the target player
@@ -199,7 +202,7 @@ public class Friend implements CommandExecutor{
     }
 
     private boolean multipleArgCommand(String command){
-        return !command.equals("list") && !command.equals("help");
+        return !(command.equals("list") || command.equals("help") || command.equals("requests"));
     }
 
 }

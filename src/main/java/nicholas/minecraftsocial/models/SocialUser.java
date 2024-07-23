@@ -71,6 +71,16 @@ public class SocialUser {
         return user;
     }
 
+    public static SocialUser getSocialUser(String username){
+        for (Map.Entry<UUID, SocialUser> entry : socialUsers.entrySet()) {
+            if(entry.getValue().getUsername().equals(username)){
+                return entry.getValue();
+            }
+        }
+
+        return databaseConnection.getSocialUserByUsername(username);
+    }
+
     public static SocialUser getSocialUserFromList(UUID uuid) {
         return socialUsers.get(uuid);
     }

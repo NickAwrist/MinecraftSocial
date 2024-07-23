@@ -2,7 +2,7 @@ package nicholas.minecraftsocial.commons;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import nicholas.minecraftsocial.SocialUser;
+import nicholas.minecraftsocial.models.SocialUser;
 import nicholas.minecraftsocial.helper.MessageHandler;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;

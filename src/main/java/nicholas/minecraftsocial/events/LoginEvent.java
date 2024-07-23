@@ -2,13 +2,12 @@ package nicholas.minecraftsocial.events;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import nicholas.minecraftsocial.SocialUser;
+import nicholas.minecraftsocial.models.SocialUser;
 import nicholas.minecraftsocial.helper.MessageHandler;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 public class LoginEvent implements Listener {

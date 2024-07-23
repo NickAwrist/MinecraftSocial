@@ -1,4 +1,4 @@
-package nicholas.minecraftsocial;
+package nicholas.minecraftsocial.models;
 
 import nicholas.minecraftsocial.database.DatabaseConnection;
 import org.bukkit.Bukkit;
@@ -16,7 +16,7 @@ public class SocialUser {
     private static final HashMap<UUID, SocialUser> socialUsers = new HashMap<>();
     private static DatabaseConnection databaseConnection;
 
-    private transient Player player;
+    private transient SocialPlayer player;
     private String username;
     private final UUID uuid;
     private final ArrayList<UUID> friendsList;
@@ -24,10 +24,10 @@ public class SocialUser {
     private final ArrayList<UUID> outgoingRequests;
     private final String dateFirstJoined;
 
-    public SocialUser(Player player) {
+    public SocialUser(SocialPlayer player) {
         this.player = player;
-        this.username = player.getName();
-        this.uuid = player.getUniqueId();
+        this.username = player.getUsername();
+        this.uuid = player.getUUID();
         this.friendsList = new ArrayList<>();
         this.incomingRequests = new ArrayList<>();
         this.outgoingRequests = new ArrayList<>();
@@ -39,10 +39,10 @@ public class SocialUser {
         addSocialUser(this);
     }
 
-    public SocialUser(Player player, ArrayList<UUID> friendsList, ArrayList<UUID> incomingRequests, ArrayList<UUID> outgoingRequests, String dateFirstJoined) {
+    public SocialUser(SocialPlayer player, ArrayList<UUID> friendsList, ArrayList<UUID> incomingRequests, ArrayList<UUID> outgoingRequests, String dateFirstJoined) {
         this.player = player;
-        this.username = player.getName();
-        this.uuid = player.getUniqueId();
+        this.username = player.getUsername();
+        this.uuid = player.getUUID();
         this.friendsList = friendsList;
         this.incomingRequests = incomingRequests;
         this.outgoingRequests = outgoingRequests;
@@ -103,10 +103,10 @@ public class SocialUser {
 
     // Getters and Setters
     public Player getPlayer() {
-        return player;
+        return player.getPlayer();
     }
     public void updatePlayerInstance(){
-        this.player = Bukkit.getPlayer(uuid);
+        this.player.updatePlayerInstance();
     }
     public UUID getUuid() {
         return uuid;
@@ -125,6 +125,10 @@ public class SocialUser {
     }
     public ArrayList<UUID> getOutgoingRequests() {
         return outgoingRequests;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+        databaseConnection.setUpdatePending(true);
     }
 
     // Add and remove friend requests. Update database for storage

@@ -2,7 +2,7 @@ package nicholas.minecraftsocial.guis;
 
 import net.kyori.adventure.text.Component;
 import nicholas.minecraftsocial.MinecraftSocial;
-import nicholas.minecraftsocial.SocialUser;
+import nicholas.minecraftsocial.models.SocialUser;
 import nicholas.minecraftsocial.commons.commons;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;

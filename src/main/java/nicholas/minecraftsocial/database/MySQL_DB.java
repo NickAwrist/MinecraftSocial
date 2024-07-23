@@ -1,13 +1,12 @@
 package nicholas.minecraftsocial.database;
 
-import nicholas.minecraftsocial.SocialUser;
+import nicholas.minecraftsocial.models.SocialPlayer;
+import nicholas.minecraftsocial.models.SocialUser;
 import nicholas.minecraftsocial.helper.MessageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -89,9 +88,11 @@ public class MySQL_DB implements DatabaseConnection {
             PreparedStatement statement = connection.prepareStatement(query);
 
             statement.setString(1, uuid.toString());
-            Player player = Bukkit.getPlayer(uuid);
 
-            if (player == null) {
+            SocialPlayer player;
+            try {
+                player = new SocialPlayer(uuid);
+            } catch (Exception e) {
                 MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to get player instance from UUID.");
                 return null;
             }
@@ -119,6 +120,51 @@ public class MySQL_DB implements DatabaseConnection {
                 addUser(newUser);
 
                 return newUser;
+            }
+
+        }catch (SQLException e) {
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to get SocialUser from MySQL database.");
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public SocialUser getSocialUserByUsername(String username) {
+        try {
+            String query = "SELECT * FROM users WHERE username = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            statement.setString(1, username);
+
+            ResultSet result = statement.executeQuery();
+
+            // If the user exists in the database, return their data.
+            if (result.next()) {
+                // Extract the JSON strings from the result set
+                String friendUuidsJson = result.getString("friend_uuids");
+                String incomingRequestsJson = result.getString("incoming_requests");
+                String outgoingRequestsJson = result.getString("outgoing_requests");
+                String dateFirstJoined = result.getString("date_first_join");
+
+                ArrayList<UUID> friendsList = convertJsonToUUIDList(friendUuidsJson);
+                ArrayList<UUID> incomingRequests = convertJsonToUUIDList(incomingRequestsJson);
+                ArrayList<UUID> outgoingRequests = convertJsonToUUIDList(outgoingRequestsJson);
+
+                // Create the SocialPlayer object
+                SocialPlayer player;
+                try {
+                    player = new SocialPlayer(UUID.fromString(result.getString("uuid")));
+                } catch (Exception e) {
+                    MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to get player instance from UUID.");
+                    return null;
+                }
+
+                // Create and return the SocialUser object
+                return new SocialUser(player, friendsList, incomingRequests, outgoingRequests, dateFirstJoined);
+
+             // If the user does not exist, return null
+            } else {
+                return null;
             }
 
         }catch (SQLException e) {

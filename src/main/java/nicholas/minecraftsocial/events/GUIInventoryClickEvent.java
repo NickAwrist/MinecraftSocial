@@ -1,20 +1,17 @@
 package nicholas.minecraftsocial.events;
 
-import nicholas.minecraftsocial.SocialUser;
-import nicholas.minecraftsocial.commons.commons;
+import nicholas.minecraftsocial.models.SocialUser;
 import nicholas.minecraftsocial.guis.FriendsGUI;
 import nicholas.minecraftsocial.guis.PlayerPersonalProfileGUI;
 import nicholas.minecraftsocial.guis.PlayerPublicProfileGUI;
 import nicholas.minecraftsocial.guis.RemoveFriendConfirmationGUI;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 public class GUIInventoryClickEvent implements Listener {
 

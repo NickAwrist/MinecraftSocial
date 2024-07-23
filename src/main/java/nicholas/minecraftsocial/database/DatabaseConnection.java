@@ -2,7 +2,7 @@ package nicholas.minecraftsocial.database;
 
 import com.google.gson.Gson;
 import nicholas.minecraftsocial.MinecraftSocial;
-import nicholas.minecraftsocial.SocialUser;
+import nicholas.minecraftsocial.models.SocialUser;
 import org.bukkit.plugin.Plugin;
 
 import java.util.UUID;
@@ -17,6 +17,7 @@ public interface DatabaseConnection {
 
     boolean needsUpdate();
     SocialUser getSocialUser(UUID uuid);
+    SocialUser getSocialUserByUsername(String username);
     void addUser(SocialUser user);
     void removeUser(SocialUser user);
     void updateDatabase();

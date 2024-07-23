@@ -1,10 +1,11 @@
 package nicholas.minecraftsocial.database;
 
-import nicholas.minecraftsocial.SocialUser;
+import nicholas.minecraftsocial.exceptions.PlayerNotFoundException;
+import nicholas.minecraftsocial.models.SocialPlayer;
+import nicholas.minecraftsocial.models.SocialUser;
 import nicholas.minecraftsocial.helper.MessageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
 import java.util.*;
@@ -84,14 +85,41 @@ public class JSON_DB implements DatabaseConnection {
         }
 
         // If the player is not in the file, create a new SocialUser object and flag it for update
-        Player player = Bukkit.getPlayer(uuid);
+        try{
+            SocialPlayer player = new SocialPlayer(uuid);
 
-        if(player == null) {
+            setUpdatePending(true);
+            return new SocialUser(player);
+
+        } catch (PlayerNotFoundException e) {
             return null;
         }
 
-        setUpdatePending(true);
-        return new SocialUser(player);
+    }
+
+    @Override
+    public SocialUser getSocialUserByUsername(String username){
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            SocialUser[] usersArr = gson.fromJson(reader, SocialUser[].class);
+            ArrayList<SocialUser> users = new ArrayList<>(Arrays.asList(usersArr));
+
+            for(SocialUser user: users) {
+                if(user.getUsername().equals(username)) {
+                    user.updatePlayerInstance();
+
+                    return user;
+                }
+            }
+
+        } catch (Exception e) {
+            MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to read JSON file.");
+
+        }
+
+        // If the player is not in the database, return null
+        return null;
     }
 
     @Override

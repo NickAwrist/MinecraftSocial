@@ -5,7 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import nicholas.minecraftsocial.commons.commons;
 import nicholas.minecraftsocial.guis.RemoveFriendConfirmationGUI;
 import nicholas.minecraftsocial.helper.MessageHandler;
-import nicholas.minecraftsocial.SocialUser;
+import nicholas.minecraftsocial.models.SocialUser;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
 

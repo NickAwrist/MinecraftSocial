@@ -18,6 +18,15 @@ public class SocialPlayer {
         this.uuid = uuid;
         initializeSocialPlayer();
     }
+    public SocialPlayer(String username) throws PlayerNotFoundException {
+        initializeSocialPlayer(username);
+        if(this.player != null){
+            this.uuid = this.player.getUniqueId();
+        } else {
+            this.uuid = this.offlinePlayer.getUniqueId();
+        }
+    }
+
 
     private void initializeSocialPlayer() throws PlayerNotFoundException {
         Player player = Bukkit.getPlayer(uuid);
@@ -27,6 +36,21 @@ public class SocialPlayer {
         } else{
             this.player = null;
             this.offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+
+            if (!this.offlinePlayer.hasPlayedBefore()) {
+                throw new PlayerNotFoundException("Player with UUID " + uuid + " does not exist.");
+            }
+        }
+    }
+
+    private void initializeSocialPlayer(String username) throws PlayerNotFoundException {
+        Player player = Bukkit.getPlayer(username);
+        if(player != null){
+            this.player = player;
+            this.offlinePlayer = null;
+        } else{
+            this.player = null;
+            this.offlinePlayer = Bukkit.getOfflinePlayer(username);
 
             if (!this.offlinePlayer.hasPlayedBefore()) {
                 throw new PlayerNotFoundException("Player with UUID " + uuid + " does not exist.");
@@ -54,9 +78,13 @@ public class SocialPlayer {
         return this.uuid;
     }
 
-    public Player updatePlayerInstance(){
+    public boolean isOnline() {
         this.player = Bukkit.getPlayer(uuid);
-        return this.player;
+        return this.player != null;
+    }
+
+    public void updatePlayerInstance(){
+        this.player = Bukkit.getPlayer(uuid);
     }
 
 

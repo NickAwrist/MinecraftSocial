@@ -2,6 +2,7 @@ package nicholas.minecraftsocial.commons;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import nicholas.minecraftsocial.models.SocialPlayer;
 import nicholas.minecraftsocial.models.SocialUser;
 import nicholas.minecraftsocial.helper.MessageHandler;
 import org.bukkit.Material;
@@ -23,8 +24,10 @@ public class commons {
     public static void addFriend(SocialUser sender, SocialUser target) {
 
         // Get the Player objects for the sender and target
-        Player senderPlayer = sender.getPlayer();
-        Player targetPlayer = target.getPlayer();
+        SocialPlayer senderSocialPlayer = sender.getSocialPlayer();
+        SocialPlayer targetSocialPlayer = target.getSocialPlayer();
+
+        Player senderPlayer = senderSocialPlayer.getPlayer();
 
         // Check if the sender is already friends with the target
         if(sender.getFriendsList().contains(target.getUuid())){
@@ -52,7 +55,8 @@ public class commons {
         target.addIncomingRequest(sender);
 
         // Notify the players
-        if(targetPlayer.isOnline()){
+        if(targetSocialPlayer.isOnline()){
+            Player targetPlayer = targetSocialPlayer.getPlayer();
             targetPlayer.playSound(targetPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
             MessageHandler.chatLegacyMessage(targetPlayer, "You have received a friend request from " + senderPlayer.getName() + ". Use /friend accept " + senderPlayer.getName() + " to accept it.", true);
         }
@@ -79,8 +83,10 @@ public class commons {
     public static void acceptRequest(SocialUser sender, SocialUser target) {
 
         // Get the Player objects for the sender and target
-        Player senderPlayer = sender.getPlayer();
-        Player targetPlayer = target.getPlayer();
+        SocialPlayer senderSocialPlayer = sender.getSocialPlayer();
+        SocialPlayer targetSocialPlayer = target.getSocialPlayer();
+
+        Player senderPlayer = senderSocialPlayer.getPlayer();
 
         if(!sender.getIncomingRequests().contains(target.getUuid())){
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
@@ -91,7 +97,8 @@ public class commons {
         sender.removeIncomingRequest(target);
         target.removeOutgoingRequest(sender);
 
-        if(targetPlayer.isOnline()){
+        if(targetSocialPlayer.isOnline()){
+            Player targetPlayer = targetSocialPlayer.getPlayer();
             targetPlayer.playSound(targetPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
             MessageHandler.chatLegacyMessage(targetPlayer, senderPlayer.getName() + " has accepted your friend request.", true);
         }
@@ -99,15 +106,17 @@ public class commons {
         sender.addFriend(target);
         target.addFriend(sender);
 
-        MessageHandler.chatSuccess(senderPlayer, "You are now friends with " + targetPlayer.getName() + ".");
+        MessageHandler.chatSuccess(senderPlayer, "You are now friends with " + targetSocialPlayer.getUsername() + ".");
     }
 
     // Sender denying target's friend request
     public static void denyRequest(SocialUser sender, SocialUser target) {
 
         // Get the Player objects for the sender and target
-        Player senderPlayer = sender.getPlayer();
-        Player targetPlayer = target.getPlayer();
+        SocialPlayer senderSocialPlayer = sender.getSocialPlayer();
+        SocialPlayer targetSocialPlayer = target.getSocialPlayer();
+
+        Player senderPlayer = senderSocialPlayer.getPlayer();
 
         if(!sender.getIncomingRequests().contains(target.getUuid())){
             senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
@@ -118,7 +127,8 @@ public class commons {
         sender.removeIncomingRequest(target);
         target.removeOutgoingRequest(sender);
 
-        if(targetPlayer.isOnline()){
+        if(targetSocialPlayer.isOnline()){
+            Player targetPlayer = targetSocialPlayer.getPlayer();
             targetPlayer.playSound(targetPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
             MessageHandler.chatLegacyMessage(targetPlayer, senderPlayer.getName() + " has denied your friend request.", true);
         }

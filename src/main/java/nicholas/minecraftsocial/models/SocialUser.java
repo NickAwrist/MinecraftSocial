@@ -105,6 +105,9 @@ public class SocialUser {
     public Player getPlayer() {
         return player.getPlayer();
     }
+    public SocialPlayer getSocialPlayer() {
+        return player;
+    }
     public void updatePlayerInstance(){
         this.player.updatePlayerInstance();
     }

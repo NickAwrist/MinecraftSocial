@@ -3,8 +3,10 @@ package nicholas.minecraftsocial.commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import nicholas.minecraftsocial.commons.commons;
+import nicholas.minecraftsocial.exceptions.PlayerNotFoundException;
 import nicholas.minecraftsocial.guis.RemoveFriendConfirmationGUI;
 import nicholas.minecraftsocial.helper.MessageHandler;
+import nicholas.minecraftsocial.models.SocialPlayer;
 import nicholas.minecraftsocial.models.SocialUser;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -30,29 +32,32 @@ public class Friend implements CommandExecutor{
             return false;
         }
 
+        String commandString = strings[0].toLowerCase();
+
         senderPlayer = ((Player) commandSender).getPlayer();
 
-        Player targetPlayer = null;
-
-        if(strings.length == 2){
-            targetPlayer = commandSender.getServer().getPlayer(strings[1]);
+        if(senderPlayer == null){
+            return false;
         }
 
-        SocialUser socialUserSender = SocialUser.getSocialUser(((Player) commandSender).getUniqueId());
+        SocialUser socialUserSender = SocialUser.getSocialUser(senderPlayer.getUniqueId());
+
+        SocialPlayer targetPlayer;
         SocialUser socialUserTarget = null;
 
+        if(strings.length == 2 && multipleArgCommand(commandString)){
+            try {
+                targetPlayer = new SocialPlayer(strings[1]);
+                socialUserTarget = SocialUser.getSocialUser(targetPlayer.getUUID());
 
-        String option = strings[0].toLowerCase();
-        if(strings.length == 2){
-            if(targetPlayer == null){
+            } catch (PlayerNotFoundException e) {
                 senderPlayer.playSound(senderPlayer.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
                 MessageHandler.chatError(senderPlayer, "Player not found.");
                 return true;
             }
-            socialUserTarget = SocialUser.getSocialUser(targetPlayer.getUniqueId());
         }
 
-        switch (option) {
+        switch (commandString) {
             case "add":
                 assert socialUserTarget != null;
                 addFriend(socialUserSender, socialUserTarget);
@@ -188,5 +193,8 @@ public class Friend implements CommandExecutor{
         return component;
     }
 
+    private boolean multipleArgCommand(String command){
+        return !command.equals("list") && !command.equals("help");
+    }
 
 }

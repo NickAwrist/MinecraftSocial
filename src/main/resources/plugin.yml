@@ -9,7 +9,13 @@ commands:
   profile:
     description: Opens player's profile
     usage: /profile
-#  debugFriendList:
-#    description: Debug command to view friend list
-#    usage: /debugFriendList {add/remove} {amount}
-
+permissions:
+  minecraftsocial.addfriend:
+    description: Allows player to add friends
+    default: true
+  minecraftsocial.removefriend:
+    description: Allows player to remove friends
+    default: true
+  minecraftsocial.acceptfriend:
+    description: Allows player to accept friend requests
+    default: true

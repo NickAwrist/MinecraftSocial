@@ -1,7 +1,8 @@
 package nicholas.minecraftsocial.models;
 
 import nicholas.minecraftsocial.database.DatabaseConnection;
-import org.bukkit.Bukkit;
+import nicholas.minecraftsocial.exceptions.PlayerNotFoundException;
+import nicholas.minecraftsocial.helper.MessageHandler;
 import org.bukkit.entity.Player;
 
 import java.time.LocalDate;
@@ -55,8 +56,10 @@ public class SocialUser {
     // Get the SocialUser object for a certain player by their UUID
     public static SocialUser getSocialUser(UUID uuid){
 
+        MessageHandler.debug(MessageHandler.DebugType.INFO, "Getting SocialUser for " + uuid);
         SocialUser user;
         if(socialUsers.containsKey(uuid)) {
+            MessageHandler.debug(MessageHandler.DebugType.INFO, "Found SocialUser in HashMap for " + uuid);
             user = socialUsers.get(uuid);
             user.updatePlayerInstance();
         }else {
@@ -119,7 +122,16 @@ public class SocialUser {
         return player;
     }
     public void updatePlayerInstance(){
-        this.player.updatePlayerInstance();
+        if(this.player!=null){
+            this.player.updatePlayerInstance();
+        }else{
+            try{
+                this.player = new SocialPlayer(uuid);
+            }catch (PlayerNotFoundException e){
+                MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to update player instance for " + uuid);
+                e.printStackTrace();
+            }
+        }
     }
     public UUID getUuid() {
         return uuid;

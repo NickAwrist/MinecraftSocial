@@ -63,6 +63,7 @@ public class JSON_DB implements DatabaseConnection {
     // Get a SocialUser by grabbing an arraylist of SocialUsers from the JSON file and iterating through it
     @Override
     public SocialUser getSocialUser(UUID uuid) {
+        MessageHandler.debug(MessageHandler.DebugType.INFO, "Getting SocialUser for " + uuid);
         try {
 
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -72,6 +73,7 @@ public class JSON_DB implements DatabaseConnection {
 
             for(SocialUser user: users) {
                 if(user.getUuid().equals(uuid)) {
+                    MessageHandler.debug(MessageHandler.DebugType.INFO, "Found SocialUser in JSON file for " + uuid);
                     user.updatePlayerInstance();
 
                     return user;
@@ -81,6 +83,7 @@ public class JSON_DB implements DatabaseConnection {
 
         } catch (Exception e) {
             MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to read JSON file.");
+            e.printStackTrace();
 
         }
 
@@ -115,6 +118,7 @@ public class JSON_DB implements DatabaseConnection {
 
         } catch (Exception e) {
             MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to read JSON file.");
+            e.printStackTrace();
 
         }
 
@@ -147,6 +151,8 @@ public class JSON_DB implements DatabaseConnection {
             reader.close();
         } catch (IOException e) {
             MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to read users from JSON file.");
+            e.printStackTrace();
+
         }
 
         // Create a map for easy merging
@@ -170,6 +176,7 @@ public class JSON_DB implements DatabaseConnection {
             writer.close();
         } catch (IOException e) {
             MessageHandler.debug(MessageHandler.DebugType.ERROR, "Failed to write users to JSON file.");
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
 

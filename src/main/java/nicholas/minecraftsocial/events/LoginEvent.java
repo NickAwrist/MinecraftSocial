@@ -18,7 +18,9 @@ public class LoginEvent implements Listener {
 
         // Creates a SocialUser instance for the player. If the player is new, it will create a new instance and add
         // it to the database
+        MessageHandler.debug(MessageHandler.DebugType.INFO, "Creating SocialUser instance for " + e.getPlayer().getName());
         SocialUser user = SocialUser.getSocialUser(e.getPlayer().getUniqueId());
+        MessageHandler.debug(MessageHandler.DebugType.INFO, "SocialUser instance created for " + e.getPlayer().getName());
 
         // Get the number of friends online
         SocialUser friend;
